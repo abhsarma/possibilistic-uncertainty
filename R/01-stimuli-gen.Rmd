@@ -1,0 +1,831 @@
+---
+title: "Stimuli Generation for Understanding interpretation of possibilistic uncertainty"
+output: html_document
+date: "2024-01-18"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(distributional)
+library(cowplot)
+library(ggdist)
+
+# set up the global theme
+theme_set(theme_minimal())
+
+# redefine the default color scheme
+palette = c("#e63946", "#77c6c6", "#780000", "#fed9b7", "#457b9d", "#cce6c3", "#7398f0") 
+
+scale_colour_data = function() {
+  scale_colour_manual(values = palette)
+}
+
+stimuli_theme = theme(
+   axis.title = element_text(size = 30),
+   axis.text = element_text(size = 24),
+   panel.grid.major = element_line(colour = "#cccccc", linewidth = 0.25),
+   panel.grid.minor = element_line(colour = "#cccccc", linewidth = 0.25)
+  )
+
+# load the following parameters from a separate file:
+# ntrials, start (of mean forecast temperature), sigma, interval.width
+# code used to generate the stimuli
+source("00-experiment-parameters.R")
+```
+
+
+# Introduction
+
+In this document, we consider two decision-making task In the first task, the participants have to perform a binary decision making task using a single temperature forecast. In the second task, participants will have to perform the same binary decision making task but using a multiple temperature forecasts, *all of which are reliable*. To ensure that the task is comprehensible to a lay audience we introduce the task using a simple scenario:
+
+## Scenario
+
+We will be adapt experimental task from Padilla et al. which presents the following scenario:
+
+> You work at the Red Cross, and your job is to manage resources for farms in Peru. In previous years, alpacas have died in Peru from cold temperatures. Alpacas can typically withstand the cold unless the temperature drops below 32°F. If the temperature drops below 32°F, alpacas need blankets to survive.
+>
+> Task
+> Your job is to issue blankets to the alpacas when temperatures fall below 32°F, which will help them withstand the cold. In the experiment, you will be shown a night-time temperature forecast like the one below, and you will have to decide whether you will issue blankets to the alpacas based on the forecast.
+>
+> Budget Constraints
+> You have a budget for N days of N*$1,000. Purchasing and delivering blankets to farmers costs $1,000 (per night). If you fail to issue blankets to the farmers and the temperature drops below 32°F, it will cost $5,000 from your budget.
+
+
+This study presents participants with a temperature forecast and requires them to make a decision based on the specified incentive. The optimal decision is to send blankets when $Pr(Temp < 32) \geq \frac{1}{5}$.
+
+
+# Experimental design and stimuli
+
+In this study, we want to understand how participants make decisions based on multiple forecasts. It will consist of two sections. First we will present participants with CDFs (cumulative distribution functions) of a single forecast. They will be then be presented with multiple forecasts using different visual representations: ensembles, averages or p-boxes.
+
+The code below generates data for one such scenario of multiple forecasts:
+
+```{r}
+N = 5
+set.seed(123)
+
+tutorial_dist = tibble(
+    mu = seq(66, 68, length.out = N),
+    sd = rnorm(N, 2, 0.2),
+    index = c(1:N)
+  )
+
+tutorial_data = tutorial_dist |> 
+  mutate(
+    x = map(index, ~ seq(61, 73, by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3) * 100)
+  )
+```
+
+The visual representations we are considering for depicting multiple forecasts:
+
+```{r, fig.height = 2.5, fig.width = 12}
+p1 = tutorial_data |> 
+  unnest(c(x, y)) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(alpha = 0.5) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  labs(x = "Temperature (in C)")
+
+p2 = tutorial_data |> 
+  unnest(c(x, y)) |> 
+  group_by(x) |> 
+  summarise(y = mean(y)) |> 
+  ggplot(aes(x, y)) +
+  geom_line(alpha = 0.5) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  labs(x = "Temperature (in C)")
+
+p3 = tutorial_data |> 
+  unnest(c(x, y)) |> 
+  group_by(x) |> 
+  summarise(y.lower = min(y), y.upper = max(y)) |> 
+  ggplot() +
+  geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper), fill = "#a8dadc", alpha = 0.7) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  labs(x = "Temperature (in C)")
+
+plot_grid(p1, p2, p3, ncol = 3)
+```
+
+# Tutorials
+
+## Cumulative Density Plots
+
+Before participants begin their trials, we need to show them how to interpret the graphs. To distinguish the information presented in the tutorials and training tasks from the actual test trials, we present the information as a temperature forecast for the daily high.
+
+First, we will create the tutorials for CDFs:
+
+```{r, fig.height = 2, fig.width = 3}
+tutorial.p1 = tutorial_data |> 
+  unnest(c(x, y)) |> 
+  filter(index == 1) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_hline(yintercept = 0.5, colour = "#777777", linewidth = 0.2) +
+  geom_line(linewidth = 1, colour = "#6455bf") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(breaks = seq(60, 80, by = 1)) +
+  coord_cartesian(xlim = c(61, 73)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  theme(
+    panel.grid.minor = element_blank()
+  )
+
+tutorial.p1
+
+```
+
+Next, we describe how a CDF can be correctly interpreted using examples:
+
+```{r, fig.height = 3, fig.width = 12}
+tutorial.p2 = tutorial.p1 +
+  geom_segment(aes(x = 60.5, y = 10, xend = 63.5, yend = 10), colour = "#8868e0", linewidth = 1, linetype = 2)
+
+tutorial.p3 = tutorial.p1 +
+  geom_segment(aes(x = 60.5, y = 50, xend = 66, yend = 50), colour = "#8868e0", linewidth = 1, linetype = 2)
+
+tutorial.p4 = tutorial.p1 +
+  geom_segment(aes(x = 60.5, y = 90, xend = 68.5, yend = 90), colour = "#8868e0", linewidth = 1, linetype = 2)
+
+cowplot::plot_grid(tutorial.p2, tutorial.p3, tutorial.p4, nrow = 1)
+```
+
+We save these figures as PDF files:
+
+```{r, eval = FALSE}
+pdf(file = "../figures/00-cdf_example.pdf", useDingbats = FALSE, width = 5, height = 3)
+tutorial.p1
+dev.off()
+
+pdf(file = "../figures/00-cdf_explanation.pdf", useDingbats = FALSE, width = 15, height = 3)
+cowplot::plot_grid(tutorial.p2, tutorial.p3, tutorial.p4, nrow = 1)
+dev.off()
+```
+
+
+## Probability boxes (p-boxes)
+
+We present multiple forecasts using either ensembles or probability boxes, which are computed using the upper and lower bounds of the cumulative distribution functions:
+
+```{r, fig.height = 3, fig.width = 8}
+tutorial.pbox.p1 = tutorial_data |> 
+  unnest(c(x, y)) |>
+  ggplot(aes(x, y, colour = factor(index))) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 10)) +
+  scale_x_continuous(breaks = seq(60, 80, by = 1)) +
+  coord_cartesian(xlim = c(61, 73)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  annotate("text", x = 66, y = 70, label = "A", colour = "#e63946", size = 6) +
+  annotate("text", x = 69.4, y = 60, label = "E", colour = "#457b9d", size = 6) +
+  scale_colour_data() +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "none"
+  )
+
+tutorial.pbox.p2 = tutorial_data |> 
+  unnest(c(x, y)) |>
+  group_by(x) |> 
+  summarise(y.lower = min(y), y.upper = max(y), .groups = "drop") |> 
+  ggplot() +
+  geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper), colour = "#6455bf", fill = "#8868e0", alpha = 0.5, linewidth = 0.15) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 10)) +
+  scale_x_continuous(breaks = seq(60, 80, by = 1)) +
+  coord_cartesian(xlim = c(61, 73)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  theme(
+    panel.grid.minor = element_blank()
+  )
+
+plot_grid(tutorial.pbox.p1, tutorial.pbox.p2, nrow = 1)
+```
+
+
+```{r, eval = FALSE}
+pdf(file = "../figures/02-pbox_calculation.pdf", useDingbats = FALSE, width = 16, height = 3)
+cowplot::plot_grid(tutorial.pbox.p1, tutorial.pbox.p1, tutorial.pbox.p2, nrow = 1)
+dev.off()
+```
+
+The following figure demonstrates that the p-box is only unique based on the upper and lower probability bounds (A and E) of the set of CDFs that we are considering. The set of distributions (on the left and right plots) are different except for the ones labelled A and E. However, both of them result in the same p-box:
+
+```{r, fig.height = 3, fig.width = 12}
+N = 5
+pbox.tutorial.data2 = tibble(
+    mu = c(66, 66.7, 66.5, 66.6, 68, 66, 67.4, 67.5, 67.6, 68),
+    sd = rep(sample_n(tutorial_data, N)$sd, 2),
+    group = rep(c(1, 2), each = N),
+    index = rep(c(1:N), 2)
+  ) |> 
+  mutate(
+    x = map(index, ~ seq(60, 74, by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |>
+  unnest(c(x, y)) |> 
+  mutate(y = y*100)
+
+
+tutorial.pbox.p3.1 = pbox.tutorial.data2 |> 
+  filter(group == 1) |> 
+  ggplot(aes(x, y, colour = factor(index))) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 10)) +
+  scale_x_continuous(breaks = seq(60, 80, by = 1)) +
+  coord_cartesian(xlim = c(61, 73)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  annotate("text", x = 66, y = 70, label = "A", colour = "#e63946", size = 6) +
+  annotate("text", x = 69.4, y = 60, label = "E", colour = "#457b9d", size = 6) +
+  scale_colour_data() +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "none"
+  )
+
+tutorial.pbox.p3.2 = pbox.tutorial.data2 |> 
+  filter(group == 2) |> 
+  ggplot(aes(x, y, colour = factor(index))) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 10)) +
+  scale_x_continuous(breaks = seq(60, 80, by = 1)) +
+  coord_cartesian(xlim = c(61, 73)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  scale_colour_data() +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "none"
+  )
+
+tutorial.pbox.p4 = pbox.tutorial.data2 |> 
+  group_by(x, group) |> 
+  summarise(y.lower = min(y), y.upper = max(y), .groups = "drop") |> 
+  ggplot() +
+  geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper, group = group), colour = "#6455bf", fill = "#8868e0", alpha = 0.5, linewidth = 0.15) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 10)) +
+  scale_x_continuous(breaks = seq(60, 80, by = 1)) +
+  coord_cartesian(xlim = c(61, 73)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  # annotate("text", x = 66, y = 70, label = "A", colour = "#e63946", size = 6) +
+  # annotate("text", x = 69.4, y = 60, label = "E", colour = "#457b9d", size = 6) +
+  theme(
+    panel.grid.minor = element_blank()
+  )
+
+cowplot::plot_grid(tutorial.pbox.p3.1, tutorial.pbox.p4, tutorial.pbox.p3.2, nrow = 1)
+```
+
+
+
+```{r, eval = FALSE}
+pdf(file = "../figures/03-pbox_calculation.pdf", useDingbats = FALSE, width = 16, height = 3)
+cowplot::plot_grid(tutorial.pbox.p3.1, tutorial.pbox.p4, tutorial.pbox.p3.2, nrow = 1)
+dev.off()
+```
+
+
+### Figure for final descriptive question
+
+```{r}
+p.desc = tutorial_data  |> 
+  mutate(
+    sd = 2,
+    x = map(index, ~ seq(60, 74, by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |>
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  group_by(x) |> 
+  summarise(
+    y.lower = min(y), 
+    y.avg = mean(y),
+    y.upper = max(y), 
+    .groups = "drop"
+  ) |> 
+  ggplot() +
+  geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper), colour = "#6455bf", fill = "#8868e0", alpha = 0.5, linewidth = 1) +
+  geom_line(aes(x = x, y = y.avg), linewidth = 1, colour = "#6455bf") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 10)) +
+  scale_x_continuous(breaks = seq(60, 80, by = 1)) +
+  coord_cartesian(xlim = c(61, 73)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  theme(
+    panel.grid.minor = element_blank()
+  )
+
+p.desc
+```
+
+
+```{r, eval = FALSE}
+pdf(file = "../figures/05-pbox_desc.pdf", useDingbats = FALSE, width = 4, height = 3)
+p.desc
+dev.off()
+```
+
+## Ensembles (of CDFs)
+
+As mentioned previously, we also present multiple forecasts using either ensembles of the cumulative distribution plots
+
+```{r, fig.height = 3, fig.width = 4}
+tutorial_data |> 
+  unnest(c(x, y)) |>
+  ggplot(aes(x, y, colour = factor(index))) +
+  geom_line(linewidth = 1) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 10)) +
+  scale_x_continuous(breaks = seq(60, 80, by = 1)) +
+  coord_cartesian(xlim = c(61, 73)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  # annotate("text", x = 66, y = 70, label = "A", colour = "#e63946", size = 6) +
+  # annotate("text", x = 69.4, y = 60, label = "E", colour = "#457b9d", size = 6) +
+  scale_colour_data() +
+  theme(
+    panel.grid.minor = element_blank(),
+    legend.position = "none"
+  )
+```
+
+# Training task
+
+We include a training task for participants to make sure they understand how to interpret the Cumulative Density Function. For this training task, participants will be shown different CDFs and asked to estimate the probability that the temperature is less than (or greater than) a specific temperature value.
+
+```{r, eval = FALSE}
+p.training = tibble(
+    mu = 67,
+    sd = 2,
+    index = 1
+  ) |> 
+  mutate(
+    x = map(index, ~ seq(60, 76, by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |>
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(linewidth = 2, colour = "#6455bf") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = c(60, 76), breaks = seq(60, 76, by = 2)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") + 
+  stimuli_theme
+
+ggsave(filename = paste0('../assets/possibilistic/tutorial/cdf-training.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p.training, device = "jpeg")
+```
+
+# Study #1
+
+## Test task stimuli
+
+The test task consists of two phases. The first phase consists of 18 trials where participants will be shown a single forecast. The second phase consists of 14 trials, where participants will be shown multiple (5) forecasts at the same time. 
+
+We create 18 temperature forecasts with the mean temperature ranging from 30°F to 38.5°F (in 0.5°F intervals). The code below generates the stimuli for the test trial:
+
+
+```{r, fig.height = 6, fig.width = 12}
+sim_dist.pnorm |> 
+  mutate(y = y*100) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(alpha = 0.8) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) +
+  facet_wrap(~ index, nrow = 3)
+```
+
+Below we visualise the entire set of stimuli for the single forecast scenario using CDFs:
+
+We choose the above values for the standard deviation (2.08) of the forecast and the width of the interval (0.5) such that the optimal crossover point (the point at which a completely rational agent working to maximise their expected utility switches from sending to not sending blankets) is approximately halfway between two curves:
+
+```{r}
+sim_dist.pnorm |> 
+  mutate(y = y*100) |> 
+  filter(index >= 8 & index <= 11) |> 
+  ggplot() +
+  geom_line(aes(x, y, group = index), colour = "#6455bf") +
+  geom_vline(aes(xintercept = 32), colour = "#202020") +
+  geom_hline(yintercept = 20, colour = "#7398f0", lty = 2) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) +
+  scale_y_continuous(breaks = seq(0, 100, by = 20))
+```
+
+If the crossover point was on a curve, it introduces ambiguity (used colloquially here) as to what the decision should be for that forecast (i.e. the expected utility of sending and not sending blankets would be the same). Our decision eliminates this ambiguity.
+
+Next we create the stimuli for the 14 sets of multiple forecasts:
+
+```{r, fig.height = 6, fig.width = 12}
+size = 7
+ngroups = ntrials - size + 1
+
+sim_dist.groups = tibble(
+  group = 1:ngroups
+) |> 
+  mutate(
+    data = list(sim_dist),
+    data = map2(data, group, ~ filter(.x, index >= .y & index < .y + size))
+  )
+
+sim_data.groups = sim_dist.groups |> 
+  unnest(c(data)) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.01)),
+    y = map2(dist, x, ~ cdf(.x, .y)[[1]]*100)
+  ) |>
+  unnest(c(x, y)) |> 
+  filter(index >= group & index < group + size) |> 
+  group_by(group, x)
+
+sim_data.groups |> 
+  summarise(y.lower = min(y), y.upper = max(y), .groups = "drop") |> 
+  ggplot() +
+  geom_vline(xintercept = 32, colour = "#4f4f4f") +
+  geom_hline(yintercept = 20, colour = "#7398f0") +
+  geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper), colour = "#333333", fill = "#a996ea", alpha = 0.5, linewidth = 0.15) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) +
+  facet_wrap(~ group, nrow = 3)
+```
+
+Note that the above set of graphs (presenting multiple forecasts) can also be visualised using ensembles:
+
+```{r, fig.height = 6, fig.width = 12}
+sim_data.groups |> 
+  ggplot() +
+  geom_vline(xintercept = 32, colour = "#4f4f4f") +
+  geom_hline(yintercept = 20, colour = "#7398f0") +
+  geom_line(aes(x = x, y, group = index), colour = "#6455bf", alpha = 0.8, linewidth = 0.5) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) +
+  facet_wrap(~ group, nrow = 3)
+```
+
+These represent the two main conditions that we will be employing in this study.
+
+## Export
+
+The following code export the stimuli for the single forecasts, represented as CDFs, as images which can be imported into qualtrics:
+
+```{r, eval = FALSE}
+# save the stimuli
+for (i in 1:ntrials) { # we have ntrials = 18
+  p = sim_dist.pnorm |>
+    mutate(y = y*100) |> 
+    filter( index == i) |> 
+    ggplot(aes(x, y, group = factor(index))) +
+    geom_line(colour = "#6455bf", linewidth = 1.5) +
+    labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+    scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+    scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) +
+    stimuli_theme
+
+  ggsave(filename = paste0('../assets/possibilistic/pilot/cdf-t', i, '.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p, device = "jpeg")
+}
+```
+
+
+The following code export the stimuli for multiple forecasts, represented as p-boxes and CDFs, as images which can be imported into qualtrics:
+
+```{r, eval = FALSE}
+# save the stimuli
+for (i in 1:ngroups) {
+  p.pbox = sim_data.groups |>
+    filter( group == i) |> 
+    summarise(y.lower = min(y), y.upper = max(y), .groups = "drop") |> 
+    ggplot() +
+    geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper), colour = "#6455bf", fill = "#6455bf", alpha = 0.5, linewidth = 0.25) +
+    labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+    scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+    scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+    stimuli_theme
+  
+  p.ensembles = sim_data.groups |>
+    filter( group == i) |> 
+    ggplot() +
+    geom_line(aes(x = x, y = y, group = index), colour = "#6455bf", linewidth = 1.5) +
+    labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+    scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+    scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+    stimuli_theme
+
+  ggsave(filename = paste0('../assets/possibilistic/pilot/pbox-t', i, '.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p.pbox, device = "jpeg")
+  ggsave(filename = paste0('../assets/possibilistic/pilot/ensembles-t', i, '.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p.ensembles, device = "jpeg")
+}
+```
+
+
+# Study #2
+
+## Test task stimuli
+
+Like the previous study, this test task also consists of two phases. We explore two different conditions in this study:
+
+- ensemble CDFs (weighted left)
+- ensemble CDFs (weighted right)
+
+The stimuli for the p-boxes condition is going to be the same. Thus the only difference is the stimuli for the two CDFs conditions. Below, we first show the set of stimuli to be used in the `ensemble CDFs (weighted left)` condition:
+
+```{r}
+sim_dist.skew_left = sim_dist.study2 |> 
+  mutate(
+    mu = ifelse(index > 1 & index < 20, mu - 1, mu),
+    mu = start + (group - 1)*interval.width + mu,
+    dist = map2(mu, sd, dist_normal),
+    bound = ifelse(index == 1 | index == size, TRUE, FALSE),
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.5)),
+    y = map2(dist, x, ~ cdf(.x, .y)[[1]] * 100)
+  )
+
+sim_dist.skew_right = sim_dist.study2 |> 
+  mutate(
+    mu = ifelse(index > 1 & index < 20, mu + 1, mu),
+    mu = start + (group - 1)*interval.width + mu,
+    dist = map2(mu, sd, dist_normal),
+    bound = ifelse(index == 1 | index == size, TRUE, FALSE),
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.5)),
+    y = map2(dist, x, ~ cdf(.x, .y)[[1]] * 100)
+  )
+```
+
+The resultant gamma values, for a rational decision maker who is discounting the outlier, are:
+
+```{r}
+set.seed(123)
+size = 20
+
+random_forecasts = truncnorm::rtruncnorm(size - 2, a = -0.7, b = 0.7, 0, 0.25) + 1.5
+
+#skew left
+mean(c(0, random_forecasts - 1)) / 3 # ignore best-case and then averaged
+mean(c(0, random_forecasts - 1), 3) / 3 # average
+
+# skewed right
+mean(c(random_forecasts + 1, 3)) / 3 # ignore worst-case and then averaged
+mean(c(0, random_forecasts + 1, 3)) / 3 # average
+```
+
+Next, we show the set of stimuli to be used in the `ensemble CDFs (weighted left)` condition:
+
+```{r, fig.height = 5, fig.width = 12}
+sim_dist.skew_left |> 
+  unnest(c(x, y)) |> 
+  ggplot() +
+  geom_vline(xintercept = 32, colour = "#4f4f4f") +
+  geom_hline(yintercept = 20, colour = "#7398f0") +
+  geom_line(aes(x = x, y, group = index), colour = "#6455bf", alpha = 0.7, linewidth = 0.25) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) +
+  facet_wrap(~ group, nrow = 3)
+```
+
+Next, we show the set of stimuli to be used in the `ensemble CDFs (weighted right)` condition:
+
+```{r, fig.height = 5, fig.width = 12}
+sim_dist.skew_right |>
+  unnest(c(x, y)) |> 
+  ggplot() +
+  geom_vline(xintercept = 32, colour = "#4f4f4f") +
+  geom_hline(yintercept = 20, colour = "#7398f0") +
+  geom_line(aes(x = x, y, group = index), colour = "#6455bf", alpha = .7, linewidth = 0.25) +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) +
+  facet_wrap(~ group, nrow = 3)
+```
+
+## Export
+
+The following code export the stimuli for multiple forecasts, represented as p-boxes and CDFs, as images which can be imported into qualtrics:
+
+```{r, eval = FALSE}
+# save the stimuli
+for (i in 1:ngroups) {
+  p.cdf_left = sim_dist.skew_left |>
+    unnest(c(x, y)) |> 
+    filter( group == i) |>
+    group_by(x) |> 
+    ggplot() +
+    geom_line(aes(x = x, y, group = index), colour = "#6455bf", alpha = 0.5, linewidth = 1) +
+    labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+    scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+    scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) +
+    stimuli_theme
+
+  p.cdf_right = sim_dist.skew_right |>
+    unnest(c(x, y)) |>
+    filter( group == i) |>
+    group_by(x) |> 
+    ggplot() +
+    geom_line(aes(x = x, y, group = index), colour = "#6455bf", alpha = 0.5, linewidth = 1) +
+    labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+    scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+    scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) +
+    stimuli_theme
+
+  ggsave(filename = paste0('../assets/possibilistic/final/ensembles_right-t', i, '.jpg'), height = 8, width = 16, units = "in", dpi = 150, plot = p.cdf_right, device = "jpeg")
+  ggsave(filename = paste0('../assets/possibilistic/final/ensembles_left-t', i, '.jpg'), height = 8, width = 16, units = "in", dpi = 150, plot = p.cdf_left, device = "jpeg")
+}
+```
+
+# Qualitative (Final) Task
+
+## Ensembles Skewed Left
+
+The final task of the study is a qualitati
+
+```{r, eval = FALSE}
+p_qual.ensembles_left = sim_dist.skew_left |>
+  filter(group == 8) |> 
+  unnest(c(x, y)) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(linewidth = 0.5, alpha = 0.7, colour = "#6455bf") +
+  scale_y_continuous(breaks = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = c(xlims[1], xlims[2]), breaks = seq(20, 44, by = 4)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") + 
+  stimuli_theme
+
+pdf("../figures/05-ensembles_left-qual.pdf", useDingbats = FALSE, width = 10, height = 6)
+p_qual.ensembles_left
+dev.off()
+```
+
+
+```{r}
+p_qual.ensembles_right = sim_dist.skew_right |>
+  filter(group == 8) |> 
+  unnest(c(x, y)) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(linewidth = 0.5, alpha = 0.7, colour = "#6455bf") +
+  scale_y_continuous(breaks = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = c(xlims[1], xlims[2]), breaks = seq(20, 44, by = 4)) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") + 
+  stimuli_theme
+
+pdf("../figures/05-ensembles_right-qual.pdf", useDingbats = FALSE, width = 10, height = 6)
+p_qual.ensembles_right
+dev.off()
+```
+
+
+
+# Attention Check Stimuli
+
+### CDFs
+
+We also include the following as an attention check trials (here the mean temperature forecast is 64°F)
+
+```{r, eval = FALSE}
+(p0.cdf.1 = tibble(index = 0, mu = 42, sd = 0.25) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |>
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(linewidth = 1.5, colour = "#6455bf") +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+  stimuli_theme)
+
+ggsave(filename = paste0('../assets/possibilistic/pilot/cdf-t101.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p0.cdf.1, device = "jpeg")
+```
+(here the mean temperature forecast is 0°F)
+
+```{r, eval = FALSE}
+(p0.cdf.2 = tibble(index = 0, mu = 22, sd = 0.25) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |>
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(linewidth = 1.5, colour = "#6455bf") +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+  stimuli_theme )
+
+ggsave(filename = paste0('../assets/possibilistic/pilot/cdf-t102.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p0.cdf.2, device = "jpeg")
+```
+
+### PBoxes
+
+```{r, eval = FALSE}
+#size = 7
+(p0.pbox.1 = tibble(index = 1:7, mu = seq(41.8, 43, by = 0.2), sd = rnorm(7, 0.25, 0.025)) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |> 
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  group_by(x) |> 
+  summarise(y.lower = min(y), y.upper = max(y), .groups = "drop") |> 
+  ggplot() +
+  geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper), colour = "#6455bf", fill = "#6455bf", alpha = 0.5, linewidth = 0.25) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+  stimuli_theme)
+
+ggsave(filename = paste0('../assets/possibilistic/pilot/pbox-t101.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p0.pbox.1, device = "jpeg")
+```
+
+```{r, eval = FALSE}
+#size = 7
+(p0.pbox.2 = tibble(index = 1:7, mu = seq(20.8, 22, by = 0.2), sd = rnorm(7, 0.25, 0.025)) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |> 
+  unnest(c(x, y)) |>
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  group_by(x) |> 
+  summarise(y.lower = min(y), y.upper = max(y), .groups = "drop") |> 
+  ggplot() +
+  geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper), colour = "#6455bf", fill = "#6455bf", alpha = 0.5, linewidth = 0.25) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+  stimuli_theme )
+
+ggsave(filename = paste0('../assets/possibilistic/pilot/pbox-t102.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p0.pbox.2, device = "jpeg")
+```
+
+
+### Ensembles
+
+```{r, eval = FALSE}
+(p0.ensembles.1 = tibble(index = 1:7, mu = seq(41.8, 43, by = 0.2), sd = rnorm(7, 0.25, 0.025)) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |> 
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(linewidth = 1.5, colour = "#6455bf") +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+  stimuli_theme )
+
+ggsave(filename = paste0('../assets/possibilistic/pilot/ensembles-t101.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p0.ensembles.1, device = "jpeg")
+```
+
+```{r, eval = FALSE}
+(p0.ensembles.2 = tibble(index = 1:7, mu = seq(20.8, 22, by = 0.2), sd = rnorm(7, 0.25, 0.025)) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |> 
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(linewidth = 1.5, colour = "#6455bf") +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+  stimuli_theme )
+
+ggsave(filename = paste0('../assets/possibilistic/pilot/ensembles-t102.jpg'), height = 8, width = 16, units = "in", dpi = 72, plot = p0.ensembles.2, device = "jpeg")
+```
+
+### Ensembles, Study 2
+
+```{r, eval = FALSE}
+(p0.ensembles.1 = tibble(index = 1:size, mu = rnorm(size, 42.4, 0.25), sd = rnorm(size, 0.25, 0.025)) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |> 
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(colour = "#6455bf", alpha = 0.7, linewidth = 0.5) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+  stimuli_theme )
+
+ggsave(filename = paste0('../assets/possibilistic/final/ensembles_left-t101.jpg'), height = 8, width = 16, units = "in", dpi = 150, plot = p0.ensembles.1, device = "jpeg")
+ggsave(filename = paste0('../assets/possibilistic/final/ensembles_right-t101.jpg'), height = 8, width = 16, units = "in", dpi = 150, plot = p0.ensembles.1, device = "jpeg")
+```
+
+```{r, eval = FALSE}
+(p0.ensembles.2 = tibble(index = 1:size, mu = rnorm(size, 21.4, 0.2), sd = rnorm(size, 0.25, 0.025)) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.1)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |> 
+  unnest(c(x, y)) |> 
+  mutate(y = y*100) |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(linewidth = 0.5, colour = "#6455bf", alpha = 0.7) +
+  labs(x = "Temperature (in °F)", y = "Cumulative Probability") +
+  scale_y_continuous(breaks  = seq(0, 100, by = 20)) +
+  scale_x_continuous(limits = xlims, breaks = seq(20, 44, by = 4)) + 
+  stimuli_theme )
+
+ggsave(filename = paste0('../assets/possibilistic/final/ensembles_left-t102.jpg'), height = 8, width = 16, units = "in", dpi = 150, plot = p0.ensembles.2, device = "jpeg")
+ggsave(filename = paste0('../assets/possibilistic/final/ensembles_right-t102.jpg'), height = 8, width = 16, units = "in", dpi = 150, plot = p0.ensembles.2, device = "jpeg")
+```

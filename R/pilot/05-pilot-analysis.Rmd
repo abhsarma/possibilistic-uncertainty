@@ -1,0 +1,260 @@
+---
+title: "Pilot Data Analysis and Prospective Power Calculations for Final Data Collection"
+output: html_document
+date: "2024-08-13"
+---
+
+
+```{r setup, include=FALSE}
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(tibble)
+library(ggplot2)
+library(gtools)
+library(tidybayes)
+library(ggdist)
+library(cowplot)
+library(distributional)
+library(bayesplot)
+library(cmdstanr)
+library(posterior)
+
+# set up the global theme
+theme_set(theme_minimal())
+
+palette = c("#E63746", "#0c7489", "#f4a261", "#aa9f88", "#7fdbda", "#cce6c3", "#7398f0") 
+
+scale_colour_data = function() {
+  scale_colour_manual(values = palette)
+}
+
+scale_colour_benchmark = function() {
+  scale_colour_manual(values = c("#E63746", "#0c7489", "#f4a261", "#aa9f88"))
+}
+
+scale_colour_binary = function() {
+  scale_colour_manual(values = c("#457b9d", "#f07167"))
+}
+
+scale_fill_densities = function() {
+  scale_fill_manual(values = c("#7398f0", "#7fdbda", "#cce6c3"))
+}
+
+
+# load the following parameters from the same file:
+# ntrials, start (of mean forecast temperature), sigma, interval.width
+source("../00-experiment-parameters.R")
+(T_opt = qnorm(1 - 1/5, 32, sigma))
+
+## helper functions
+prepare_standata = function(data, .id) {
+  pid = factor(data[[.id]])
+  
+  list(
+    "N" = nrow(data),
+    "Y" = data$response,
+    "P_upper" = data$.upper,
+    "P_lower" = data$.lower,
+    "pid" = as.integer(pid),
+    "is_single" = as.integer(data$block == "single"),
+    "n_pid" = length(unique(as.integer(pid))),
+    "X" = matrix(as.integer(c(data$vis == "pbox", data$vis == "ensembles")), ncol = 2),
+    "K" = 2,
+    "M" = 2
+  )
+}
+
+add_list_vars = function(.stan_list, ...) {
+  .vars = enquos(...)
+  .new_vars = map(.vars, rlang::eval_tidy)
+  
+  append(.stan_list, .new_vars)
+}
+
+random_str = function(len) { stringi::stri_rand_strings(1, len) }
+
+FLAG_RUN_MODEL = FALSE
+```
+
+# Introduction
+
+We conduct a power analysis based on the data collected in a pilot. We fit the model that we identified for our complete analysis to the pilot data, where we have the responses of 20 participants. We then use the generative Bayesian hierarchical model to generate new datasets where we vary the number of participants (N = 120, 150, 180). Based on the results of our pilot, we see little improvement in precision as we increase the number of participants. As such, we identified that we would need 75 participants in each condition (N = 150) to be able to obtain estimates we a reasonable degree of precision.
+
+# Analysis
+
+The first step is to load the data:
+
+```{r}
+df = read.csv("../../data/pilot/anonymised-data.csv") |> 
+  mutate(block = factor(block, levels = c("single", "multiple"))) |> 
+  left_join(
+    rename(exp.design, trial = index), # in exp.design, index indicates the trial id
+    by = c("block", "trial")
+  ) |> 
+  filter(trial < 100)
+
+head(df)
+```
+
+## Modeling
+
+We then convert the data into the format required by cmdstan, and fit the model:
+
+```{r}
+df_all_forecast.list = df |> 
+  prepare_standata(.id = "user_id") |> 
+  add_list_vars(
+    "X" = matrix(as.integer(c(df$vis == "pbox", df$vis == "ensembles")), ncol = 2),
+    K = 2,
+    M = 2
+  )
+
+model_all_forecasts = cmdstan_model("../stan_models/03-model-complete_forecasts-all_effects.stan")
+
+if (FLAG_RUN_MODEL) {
+  fit_pilot = model_all_forecasts$sample(
+    data = df_all_forecast.list,
+    iter_warmup = 2000, 
+    iter_sampling = 2000, 
+    chains = 4,
+    parallel_chains = 4, 
+    refresh = 200,
+    thin = 2
+  )
+  
+  fit_pilot = as_draws_df(fit_pilot)
+  saveRDS(fit_pilot, "../../cache/_model_fits/03-fit_pilot.rds")
+} else {
+  fit_pilot = readRDS("../../cache/_model_fits/03-fit_pilot.rds")
+}
+```
+
+
+## Power Analysis
+
+We will now use the fitted model to simulate hypothetical datasets of different sizes (# of participants). We define the function below to generate hypothetical datasets for different number of participants.
+
+```{r}
+generate_data = function(n_participants, gamma_delta = 0) {
+  ntrials = nrow(exp.design)
+  as_draws_rvars(fit_pilot) |> 
+    spread_draws(b_beta, b_alpha, b_gamma[vis], sd_gamma, sd[term], L[i,term], ndraws = ntrials) |> 
+    pivot_wider(names_from = "term", values_from = c("sd", "L")) |> 
+    pivot_wider(names_from = "i", values_from = c("L_1", "L_2"))|> 
+      mutate(
+        sd = map2(sd_1, sd_2, ~ diag(c(.x, .y))),
+        L = pmap(list(L_1_1, L_1_2, L_2_1, L_2_2), ~ matrix(c(..1, ..2, ..3, ..4), nrow = 2)),
+        z = map(.draw, ~ matrix(rnorm(2*n_participants), ncol = 2)),
+        r = pmap(list(z, sd, L), ~ ..1 %*% ..2 %*% t(..3)),
+        r_alpha = map(r, ~ .[,1]),
+        r_beta = map(r, ~ .[,2]),
+        r_gamma = map(sd_gamma, ~ rnorm(n_participants, 0, .)),
+        trial = 1:ntrials,
+        pid = list(1:n_participants),
+        .upper = exp.design$.upper,
+        .lower = exp.design$.lower,
+        block = exp.design$block
+      ) |>
+      select(-c(sd_1, sd_2, starts_with("L"), sd, z, r)) |>
+      unnest(c(pid, r_alpha, r_beta, r_gamma, .upper, .lower)) |>
+      mutate(
+        vis = ifelse(vis == 1, "pbox", "ensembles"),
+        alpha = b_alpha + r_alpha,
+        beta = b_beta + r_beta,
+        gamma = pmap_dbl(list(b_gamma, sd_gamma, r_gamma), ~ logitnorm::momentsLogitnorm(mu = ..1 + ..3, sigma = ..2)[[1]]),
+        p_send = inv.logit(alpha + beta*(logit(gamma*.upper + (1 - gamma)*.lower) - logit(0.2))),
+        response = map_dbl(p_send, ~ rbinom(1, 1, .))
+      ) |>
+      select(trial, .upper, .lower, pid, block, vis, response)
+}
+
+set.seed(123456)
+df_sim_n60.list = generate_data(60) |> prepare_standata("pid")
+df_sim_n75.list = generate_data(75) |> prepare_standata("pid")
+df_sim_n90.list = generate_data(90) |> prepare_standata("pid")
+
+# fit.power_n60 = readRDS("../../cache/_model_fits/03-1-power_n60.rds")
+# fit.power_n75 = readRDS("../../cache/_model_fits/03-2-power_n75.rds")
+# fit.power_n90 = readRDS("../../cache/_model_fits/03-3-power_n90.rds")
+```
+
+We then fit our model to each of these generated datasets, and look at the standard error (for the $\gamma$ parameter) of the resulting estimates:
+
+```{r}
+if (FLAG_RUN_MODEL) {
+  fit.power_n60 = model_all_forecasts$sample(
+      data = df_sim_n60.list,
+      iter_warmup = 2000, 
+      iter_sampling = 2000, 
+      chains = 4,
+      parallel_chains = 4, 
+      refresh = 200,
+      thin = 2
+    )
+  
+  draws.fit.power_n60 = as_draws_df(fit.power_n60)
+  saveRDS(fit.power_n60, "../../cache/_model_fits/03-1-power_n60.rds")
+} else {
+  fit.power_n60 = readRDS("../../cache/_model_fits/03-1-power_n60.rds")
+}
+
+as_draws_df(fit.power_n60) |> 
+  select(-starts_with("r"), -starts_with("z"),  -starts_with("sd"), -starts_with("L")) |> 
+  summarise_draws(mean, sd, quantile2, rhat, ess_bulk, ess_tail) |> 
+  mutate_if(is.numeric, ~ round(., 4))
+```
+
+
+```{r}
+if (FLAG_RUN_MODEL) {
+  fit.power_n75 = model_all_forecasts$sample(
+    data = df_sim_n75.list,
+    iter_warmup = 2000, 
+    iter_sampling = 2000, 
+    chains = 4,
+    parallel_chains = 4, 
+    refresh = 200,
+    # adapt_delta = 0.95,
+    thin = 2
+  )
+  
+  draws.fit.power_n75 = as_draws_df(fit.power_n75)
+  saveRDS(fit.power_n75, "../../cache/_model_fits/03-2-power_n75.rds")
+} else {
+  fit.power_n75 = readRDS("../../cache/_model_fits/03-2-power_n75.rds")
+}
+
+as_draws_df(fit.power_n75) |> 
+  select(-starts_with("r"), -starts_with("z"),  -starts_with("sd"), -starts_with("L")) |> 
+  summarise_draws(mean, sd, quantile2, rhat, ess_bulk, ess_tail) |> 
+  mutate_if(is.numeric, ~ round(., 4))
+```
+
+
+```{r}
+if (FLAG_RUN_MODEL) {
+  fit.power_n90 = model_all_forecasts$sample(
+    data = df_sim_n90.list,
+    iter_warmup = 2000, 
+    iter_sampling = 2000, 
+    chains = 4,
+    parallel_chains = 4, 
+    refresh = 200,
+    thin = 2
+  )
+  
+  draws.fit.power_n90 = as_draws_df(fit.power_n90)
+  saveRDS(fit.power_n90, "../../cache/_model_fits/03-3-power_n90.rds")
+} else {
+  fit.power_n90 = readRDS("../../cache/_model_fits/03-3-power_n90.rds")
+}
+
+as_draws_df(fit.power_n90) |> 
+  select(-starts_with("r"), -starts_with("z"),  -starts_with("sd"), -starts_with("L")) |> 
+  summarise_draws(mean, sd, quantile2, rhat, ess_bulk, ess_tail) |> 
+  mutate_if(is.numeric, ~ round(., 4))
+```
+
+
+

@@ -1,0 +1,651 @@
+---
+title: "Data Analysis for Experiments 1 and 2"
+output: html_document
+date: "2024-08-13"
+---
+
+
+```{r setup, include=FALSE}
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(tibble)
+library(ggplot2)
+library(gtools)
+library(tidybayes)
+library(ggdist)
+library(cowplot)
+library(distributional)
+library(bayesplot)
+library(cmdstanr)
+library(posterior)
+
+# set up the global theme
+theme_set(theme_minimal())
+
+pallete1 = c("#EF476F","#0c7489")
+pallete2 = c("#7fdbda", "#7398f0")
+
+# load the following parameters from the same file:
+# ntrials, start (of mean forecast temperature), sigma, interval.width
+source("00-experiment-parameters.R")
+(T_opt = qnorm(1 - 1/5, 32, sigma))
+
+## helper functions
+prepare_standata_study1 = function(data, .id) {
+  pid = factor(data[[.id]])
+  
+  list(
+    "N" = nrow(data),
+    "Y" = data$response,
+    "P_upper" = data$.upper,
+    "P_lower" = data$.lower,
+    "pid" = as.integer(pid),
+    "is_single" = as.integer(data$block == "single"),
+    "n_pid" = length(unique(as.integer(pid)))
+  )
+}
+
+add_list_vars = function(.stan_list, ...) {
+  .vars = enquos(...)
+  .new_vars = map(.vars, rlang::eval_tidy)
+  
+  append(.stan_list, .new_vars)
+}
+
+random_str = function(len) { stringi::stri_rand_strings(1, len) }
+
+FLAG_RUN_MODEL = FALSE
+```
+
+# Introduction
+
+In this document, we present the complete analysis for the paper `More ’pacas, More Problems: How Uncertainty Representations for Multiple Forecasts Impact Decision Making`. In this paper, we conducted three separate experiments:
+
+- in Experiment 1, we compare ensembles and p-boxes
+- in Experiment 2, we compare two different ensembles (left and right skewed)
+- in Experiment 3, we compare phrasing (reliable vs equally reliable) to address an error in Experiment 1
+
+# Experiment 1
+
+We first load the (anonymised) data for experiment 1, to which we add the relevant experimental parameters (from the `exp.design` data frame):
+
+```{r}
+df_exp1 = read.csv("../data/study-final-1/anonymised-data.csv") |> 
+  select(-c(curve_for_decision:budget)) |> 
+  mutate(block = factor(block, levels = c("single", "multiple"))) |> 
+  left_join(
+    rename(exp.design, trial = index), # in exp.design, index indicates the trial id
+    by = c("block", "trial")
+  ) |> 
+  filter(trial < 100)  # remove attention check trials
+
+head(df_exp1)
+```
+
+The resultant dataset has the following schema:
+
+- `user_id`: A unique identifier which is assigned to each user
+- `vis`: the visualisation condition that the user was in
+- `index`: trial index
+- `block`: the block associated with the trial (`single` or `multiple`)
+- `response`: participants' response; 1: send aid; 0: do not send aid
+- `trial`: the trial index associated with the stimuli
+- `mu`: mean(s) of the forecasts shown to participants
+- `sd`: sd(s) of the forecasts shown to participants
+- `dist`: distributional objects(s) for each of the forecasts shown to participants
+- `p_true`: probability of freezing corresponding to each of the forecasts
+- `.upper`: upper bound of the probability of freezing corresponding to each of the forecasts
+- `.lower`: lower bound of the probability of freezing corresponding to each of the forecasts
+
+## Exploratory Data Analysis
+
+We find that the best way to visualise the data is to show the responses of a sample of participants. Below, are the responses for the block where single forecasts are shown:
+
+```{r, fig.height = 5, fig.width = 16}
+df_exp1.sample = df_exp1 |> 
+  group_by(user_id, vis) |> 
+  nest() |> 
+  group_by(vis) |> 
+  sample_n(12) |> 
+  unnest(c(data))
+
+df_exp1.sample |>
+  filter(block == "single") |> 
+  unnest(c(mu)) |> 
+  ggplot() +
+  geom_vline(aes(xintercept = 33.75), colour = "red") +
+  geom_point(aes(x = mu, y = response, colour = vis)) +
+  facet_wrap(. ~ user_id, nrow = 4) +
+  scale_y_continuous(breaks = c(0, 1)) +
+  labs(x = "Mean of the Forecast Temperature Distributions") +
+  theme(panel.border = element_rect(colour = "#bbbbbb", fill = NA, linewidth = 0.2), panel.spacing = unit(6, "mm"))
+```
+Below, are the responses for the block where multiple forecasts are shown:
+
+```{r, fig.height = 5, fig.width = 16}
+df_exp1.sample |> 
+  filter(block == "multiple") |> 
+  mutate(mu = map_dbl(mu, ~ .[[4]])) |> 
+  ggplot() +
+  geom_vline(aes(xintercept = 33.75), colour = "red") +
+  geom_point(aes(x = mu, y = response, colour = vis)) +
+  facet_wrap(. ~ user_id, nrow = 4) +
+  scale_y_continuous(breaks = c(0, 1)) +
+  labs(x = "Mean of the Forecast Temperature Distributions") +
+  theme(panel.border = element_rect(colour = "#bbbbbb", fill = NA, linewidth = 0.2), panel.spacing = unit(6, "mm"))
+```
+
+## Modeling
+
+We use the model outlined in `03-simulation.Rmd`, where we described in detail our progressive model building approach. The first step is to fit the model:
+
+```{r, expt-1}
+df_exp1_all_forecast.list = df_exp1 |> 
+  prepare_standata_study1(.id = "user_id") |> 
+  add_list_vars(
+    "X" = matrix(as.integer(c(df_exp1$vis == "pbox", df_exp1$vis == "ensembles")), ncol = 2),
+    K = 2,
+    M = 2
+  )
+
+model_all_forecasts = cmdstan_model("./stan_models/03-model-complete_forecasts-all_effects.stan")
+
+if (FLAG_RUN_MODEL) {
+  fit_final_exp1 = model_all_forecasts$sample(
+      data = df_exp1_all_forecast.list,
+      iter_warmup = 4000, 
+      iter_sampling = 4000, 
+      chains = 4,
+      parallel_chains = 4, 
+      refresh = 400,
+      thin = 4
+    )
+  
+  # draws.fit_exp1 = as_draws_df(fit_final_exp1)
+  # saveRDS(fit_final_exp1, "../cache/_model_fits/04-fit_final_study1.rds")
+} else {
+  fit_final_exp1 = readRDS("../cache/_model_fits/04-fit_final_study1.rds")
+}
+```
+
+## Diagnostics
+
+```{r}
+as_draws(fit_final_exp1) |> 
+  bayesplot::mcmc_pairs(pars = c("b_alpha", "b_gamma[1]", "b_gamma[2]"))
+```
+
+## Results
+
+Below, we extract draws and show the posterior mean and 95% credible intervals for each of the parameters.
+
+```{r}
+draws.fit_exp1 = as_draws_df(fit_final_exp1)
+
+draws.fit_exp1 |> 
+  select(-starts_with("r"), -starts_with("z"), -starts_with("sd"), -starts_with("L")) |> 
+  mutate(
+    gamma1 = map_dbl(`b_gamma[1]`, gtools::inv.logit),
+    gamma2 = map_dbl(`b_gamma[2]`, gtools::inv.logit)
+  ) |>
+  summarise_draws(mean, sd, quantile2, rhat, ess_bulk, ess_tail) |> 
+  mutate_if(is.numeric, ~ round(., 2))
+```
+
+To visualise the results, we show the posterior densities for $\alpha$ and $\beta$ parameters as well as the estimated linear relationship between the probability of freezing shown for a forecast and the probability of sending aid. We also show the posterior densities for the $\gamma$ parameters in the two conditions, and estimate a `decision-making reference distribution corresponding` to the value of $\gamma$: assuming participants are applying the optimism-pessimism rule for making decision, what distribution does their weight correspond to?
+
+```{r, fig.height = 4, fig.width = 12}
+df_exp1_parameters = draws.fit_exp1 |> 
+  spread_draws(b_alpha, b_beta, b_gamma[vis], sd_gamma) |> 
+  mutate(
+    .value = map2_dbl(b_gamma, sd_gamma, ~ logitnorm::momentsLogitnorm(mu = .x, sigma = .y)[[1]]),
+  ) |> 
+  select(-b_gamma, -sd_gamma) |> 
+  pivot_wider(values_from = .value, names_from = "vis", names_prefix = "b_gamma_")
+
+df_exp1_pbox = tibble(
+  x = seq(xlims[1], xlims[2], by = 0.1),
+  .lower = map_dbl(x, ~ cdf(dist_normal(32, 2.34), .x)[[1]]*100),
+  .upper = map_dbl(x, ~ cdf(dist_normal(35, 2.01), .x)[[1]]*100)
+)
+
+p1 = df_exp1_parameters |> 
+  ggplot() +
+  stat_slab(aes(x = b_alpha, y = NA), fill = "#FFC49B") +
+  scale_x_continuous(breaks = seq(-3, 1, by = 1), limits = c(-3, 2))
+
+p2 = df_exp1_parameters |> 
+  ggplot() +
+  stat_slab(aes(x = b_beta, y = NA), fill = "#FFC49B") +
+  scale_x_continuous(breaks = seq(1, 4, by = 1), limits = c(0, 5))
+
+p3 = draws.fit_exp1 |> 
+  spread_draws(b_alpha, b_beta) |> 
+  mutate(p_true = list(seq(0.01, 0.99, by = 0.01))) |> 
+  unnest(c(p_true)) |> 
+  mutate(p_send = inv.logit(b_alpha + b_beta * (logit(p_true) - logit(0.2)))) |> 
+  ggplot()+
+  geom_vline(xintercept = 0.2, lty = 2) +
+  geom_hline(yintercept = 0.5, lty = 2) +
+  stat_lineribbon(aes(x = p_true, y = p_send), .width = 0.95, fill = "#FFC49B", alpha = 0.5) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.2)) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.2)) 
+
+p4 = df_exp1_parameters |> 
+  pivot_longer(cols = starts_with("b_"), names_pattern = "b_(.*)", names_to = "parameter", values_to = ".value") |> 
+  filter(parameter == "gamma_1" | parameter == "gamma_2") |> 
+  ggplot() +
+  stat_slab(aes(x = .value, y = NA, fill = parameter), alpha = 0.7) +
+  # scale_x_continuous(breaks = seq(-4, 2, by = 2), limits = c(-5, 4)) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.2), limits = c(0, 1)) +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = pallete1)
+
+p5 = df_exp1_parameters |> 
+  select(-b_alpha, -b_beta) |> 
+  mutate(data = list(filter(df_exp1_pbox, x >= 24 & x <= 40))) |> 
+  unnest(c(data)) |> 
+  pivot_longer(cols = starts_with("b_"), names_pattern = "b_(.*)", names_to = "parameter", values_to = ".value") |> 
+  mutate(p_send = .value *.upper + (1 - .value)*.lower) |> 
+  ggplot() +
+  geom_lineribbon(data = filter(df_exp1_pbox, x >= 24 & x <= 40), aes(x = x, ymin = .lower, ymax = .upper), fill = "#aaaaaa", alpha = 0.2, linewidth = 0.15) +
+  stat_lineribbon(aes(x, p_send, fill = parameter), .width = .95, alpha = 0.5) +
+  scale_x_continuous(breaks = seq(24, 40, by = 4)) +
+  scale_y_continuous(breaks = seq(0, 100, by = 20)) +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = pallete1)
+
+# pdf(file = "../figures/paper/study1-parameters.pdf", useDingbats = FALSE, width = 16, height = 6)
+cowplot::plot_grid(p1, p2, p3, p4, p5, NULL, nrow = 2)
+# dev.off()
+```
+
+### Estimate of the crossover point
+
+Our generative model also allows us to derive an estimate (with uncertainty) for the crossover point:
+
+```{r}
+draws.fit_exp1 |> 
+  spread_draws(b_alpha, b_beta) |> 
+  mutate(p = inv.logit((logit(0.5) - b_alpha) / b_beta + logit(0.2))) |> 
+  median_qi(p, .width = .95)
+```
+
+### Difference in gamma
+
+We also estimate the difference in $\gamma$ between the two conditions:
+
+```{r}
+df_exp1_parameters |> 
+  mutate(.diff = b_gamma_1 - b_gamma_2) |> 
+  median_qi(.diff)
+```
+
+### Random effects for gamma
+
+We incorporate a hierarchical model where we estimate a separate intercept parameter for each participant
+
+```{r, fig.height=4, fig.width=9, warning = FALSE}
+df_exp1_conditions = df_exp1 |> 
+  select(user_id, vis) |> 
+  group_by(user_id) |> 
+  filter(row_number() == 1) |> 
+  ungroup() |> 
+  mutate(
+    user_id = as.integer(factor(user_id)),
+    vis = ifelse(vis == "pbox", 1, 2)
+  )
+
+df_exp1.draws_gamma = draws.fit_exp1 |> 
+  spread_draws(b_gamma[vis], r_gamma[user_id], ndraws = 2000) |> 
+  right_join(df_exp1_conditions, by = join_by(vis, user_id)) |> 
+  group_by(vis, user_id) |> 
+  mutate(
+    .value = b_gamma + r_gamma, 
+    .mean = mean(.value),
+    vis = ifelse(vis == 1, "pbox", "ensembles"), 
+  ) |> 
+  arrange(.mean) |> 
+  nest() |> 
+  group_by(vis) |> 
+  mutate(.index = row_number(), .index = factor(.index)) |> 
+  unnest(c(data)) |> 
+  select(-b_gamma, -r_gamma, -.chain, -.iteration)
+
+p.exp1.gamma_fixedeffs = draws.fit_exp1 |> 
+  spread_draws(b_gamma[vis], sd_gamma, ndraws = 2000) |> 
+  mutate(
+    .value = b_gamma,
+    vis = factor(ifelse(vis == 1, "ensembles_left", "ensemble_right"), levels = c("ensembles_left", "ensemble_right"))
+  ) |> 
+  ggplot() +
+  geom_hline(yintercept = 0, linewidth = 0.25) +
+  stat_slab(aes(y = NA, x = .value, fill = vis), alpha = 0.7, orientation = "y") +
+  scale_fill_manual(values = pallete2) +
+  scale_colour_manual(values = pallete2) +
+  coord_cartesian(xlim = c(-4, 2)) +
+  theme(legend.position = "none", axis.text.y = element_blank(), panel.grid.major.y = element_blank(), axis.title.y = element_blank())
+
+p.exp1.gamma_dots = df_exp1.draws_gamma |> 
+  group_by(vis, user_id) |> 
+  summarise(.value = mean(.value), .groups = "keep") |> 
+  ggplot() +
+  # geom_dots(aes(x = .value, fill = vis, colour = vis), alpha = 0.7, side = "bottomleft", dotsize = 1.075, overflow = "keep") +
+  geom_dots(
+    aes(x = .value, fill = vis, colour = vis, group = NA, order = vis), 
+    alpha = 0.7, side = "bottomleft", dotsize = 1.075, overflow = "keep"
+  ) +
+  scale_fill_manual(values = pallete2) +
+  scale_colour_manual(values = pallete2) +
+  coord_cartesian(xlim = c(-4, 2)) +
+  theme(legend.position = "none", axis.text.y = element_blank(), panel.grid.major.y = element_blank())
+
+# pdf(file = "../figures/paper/study2-gamma.pdf", useDingbats = FALSE, width = 8, height = 10)
+cowplot::plot_grid(p.exp1.gamma_fixedeffs, p.exp1.gamma_dots, ncol = 1)
+# dev.off()
+```
+
+From the figure above, we do not observe much variation between participants.
+
+The results of Experiment 1 suggests that there is likely little or no difference in participants' decision-making strategies when a set of uniformly distributed multiple forecasts are presented either as ensembles or p-boxes. However, it is possible that forecasts are not always going to be uniformly distributed. In Experiment 2, we explore whether a clustering of forecasts (which we refer to as left-skewed or right-skewed ensembles) could have an impact on participants' decision-making strategies.
+
+# Experiment 2
+
+To analyse the data for Experiment 2, we repeat the steps outlined for Experiment 1.
+
+```{r}
+df_exp2 = read.csv("../data/study-final-2/anonymised-data.csv") |> 
+  mutate(block = factor(block, levels = c("single", "multiple"))) |> 
+  left_join(
+    rename(exp.design, trial = index), # in exp.design, index indicates the trial id
+    by = c("block", "trial")
+  ) |> 
+  filter(trial < 100)
+
+head(df_exp2)
+```
+
+## Modelling
+
+```{r, expt-2}
+df_exp2_all_forecast.list = df_exp2 |> 
+  prepare_standata_study1(.id = "user_id") |> 
+  add_list_vars(
+    K = 2,
+    M = 2,
+    "X" = matrix(as.integer(c(df_exp2$vis == "ensembles_left", df_exp2$vis == "ensembles_right")), ncol = 2)
+  )
+
+model_all_forecasts = cmdstan_model("./stan_models/03-model-complete_forecasts-all_effects.stan")
+
+if (FLAG_RUN_MODEL) {
+  fit_final_exp2 = model_all_forecasts$sample(
+    data = df_exp2_all_forecast.list,
+    iter_warmup = 4000, 
+    iter_sampling = 4000, 
+    chains = 4,
+    parallel_chains = 4, 
+    refresh = 400,
+    thin = 4
+  )
+  
+  # draws.fit_exp2 = as_draws_df(fit_final_exp2)
+  # saveRDS(fit_final_exp2, "../cache/_model_fits/05-fit_final_study2.rds")
+} else {
+  fit_final_exp2 = readRDS("../cache/_model_fits/05-fit_final_study2.rds")
+}
+```
+
+### Diagnostics
+
+
+```{r}
+as_draws(fit_final_exp2) |> 
+  bayesplot::mcmc_pairs(pars = c("b_alpha", "b_beta", "b_gamma[1]", "b_gamma[2]"))
+```
+
+
+### Results
+
+```{r}
+draws.fit_exp2 = as_draws_df(fit_final_exp2)
+
+draws.fit_exp2 |> 
+  select(-starts_with("r"), -starts_with("z"), -starts_with("sd"), -starts_with("L")) |> 
+  mutate(
+    gamma1 = map_dbl(`b_gamma[1]`, gtools::inv.logit),
+    gamma2 = map_dbl(`b_gamma[2]`, gtools::inv.logit)
+  ) |>
+  summarise_draws(mean, sd, quantile2, rhat, ess_bulk, ess_tail) |> 
+  mutate_if(is.numeric, ~ round(., 2))
+```
+
+```{r, fig.height=12, fig.width=4}
+df_exp2_conditions = df_exp2 |> 
+  select(user_id, vis) |> 
+  group_by(user_id) |> 
+  filter(row_number() == 1) |> 
+  ungroup() |> 
+  mutate(
+    user_id = as.integer(factor(user_id)),
+    vis = ifelse(vis == "ensembles_left", 1, 2)
+  )
+
+df_exp2.draws_gamma = draws.fit_exp2 |> 
+  spread_draws(b_gamma[vis], r_gamma[user_id], ndraws = 2000) |> 
+  right_join(df_exp2_conditions, by = join_by(vis, user_id)) |> 
+  group_by(vis, user_id) |> 
+  mutate(
+    .value = b_gamma + r_gamma, 
+    # .value = inv.logit(b_gamma + r_gamma), 
+    vis = ifelse(vis == 1, "ensembles_left", "ensembles_right"), 
+  ) |> 
+  select(-b_gamma, -r_gamma, -.chain, -.iteration)
+```
+
+
+### Gamma parameter
+
+In the logit scale:
+
+```{r}
+df_exp2_parameters = draws.fit_exp2 |> 
+  spread_draws(b_alpha, b_beta, b_gamma[vis], sd_gamma) |> 
+  mutate(
+    .value = map2_dbl(b_gamma, sd_gamma, ~ logitnorm::momentsLogitnorm(mu = .x, sigma = .y)[[1]]),
+  ) |> 
+  select(-b_gamma, -sd_gamma) |> 
+  pivot_wider(values_from = .value, names_from = "vis", names_prefix = "b_gamma_")
+
+p.exp2.gamma_fixedeffs = draws.fit_exp2 |> 
+  spread_draws(b_gamma[vis], sd_gamma, ndraws = 2000) |> 
+  mutate(
+    .value = map2_dbl(b_gamma, sd_gamma, ~ logitnorm::momentsLogitnorm(mu = .x, sigma = .y)[[1]]),
+    vis = factor(ifelse(vis == 1, "ensembles_left", "ensemble_right"), levels = c("ensembles_left", "ensemble_right"))
+  ) |> 
+  ggplot() +
+  geom_hline(yintercept = 0, linewidth = 0.25) +
+  stat_slab(aes(y = NA, x = .value, fill = vis), alpha = 0.7, orientation = "y") +
+  scale_fill_manual(values = pallete2) +
+  scale_colour_manual(values = pallete2) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.2)) +
+  coord_cartesian(xlim = c(0, 1)) +
+  theme(legend.position = "none", axis.text.y = element_blank(), panel.grid.major.y = element_blank(), axis.title.y = element_blank())
+
+p.exp2.gamma_dots = df_exp2.draws_gamma |> 
+  group_by(vis, user_id) |> 
+  summarise(.value = mean(inv.logit(.value)), .groups = "keep") |> 
+  ggplot() +
+  geom_dots(
+    aes(x = .value, fill = vis, colour = vis, group = NA, order = vis), 
+    binwidth = 0.02, alpha = 0.7, side = "bottomleft", dotsize = 1.075, overflow = "keep"
+  ) +
+  scale_fill_manual(values = pallete2) +
+  scale_colour_manual(values = pallete2) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.2)) +
+  coord_cartesian(xlim = c(0, 1)) +
+  theme(legend.position = "none", axis.text.y = element_blank(), panel.grid.major.y = element_blank())
+
+p5.gamma = df_exp2_parameters |> 
+  select(-b_alpha, -b_beta) |> 
+  mutate(data = list(filter(df_exp1_pbox, x >= 24 & x <= 40))) |> 
+  unnest(c(data)) |> 
+  pivot_longer(cols = starts_with("b_"), names_pattern = "b_(.*)", names_to = "parameter", values_to = ".value") |> 
+  mutate(p_send = .value *.upper + (1 - .value)*.lower) |> 
+  ggplot() +
+  geom_lineribbon(data = filter(df_exp1_pbox, x >= 24 & x <= 40), aes(x = x, ymin = .lower, ymax = .upper), fill = "#aaaaaa", alpha = 0.2, linewidth = 0.15) +
+  stat_lineribbon(aes(x, p_send, fill = parameter), .width = .95, alpha = 0.5) +
+  scale_x_continuous(breaks = seq(24, 40, by = 4)) +
+  scale_y_continuous(breaks = seq(0, 100, by = 20)) +
+  theme(legend.position = "none") +
+  scale_fill_manual(values = pallete2)
+
+# pdf(file = "../figures/paper/study2-gamma.pdf", useDingbats = FALSE, width = 8, height = 5)
+cowplot::plot_grid(p.exp2.gamma_fixedeffs, NULL, p.exp2.gamma_dots, p5.gamma, ncol = 2)
+# dev.off()
+```
+
+## Comparison to Padilla et al.
+
+Our study is similar to the study conducted by Padilla et al. However, we use a different parameterisation based on the probability of freezing instead of the mean temperature of the forecast. We can obtain the model estimates for the study by Padilla et al., using our model parameterisation:
+
+```{r, message=FALSE, warning=FALSE}
+library(brms)
+
+sigma = 2 # of the stimuli in the padilla et al. study
+
+exp1_long_padilla = read.csv("../data/padilla-exp1_2019.csv") |> 
+  filter(row_number() > 2) |> 
+  select(ResponseId, contains("alpaca")) |> 
+  pivot_longer(cols = contains("alpaca"), names_to = "trials", names_prefix = "alpaca_", values_to = "response") |> 
+  separate_wider_delim(trials, names = c("temperature", "condition"), delim = "_") |> 
+  mutate(
+    temperature = map_dbl(temperature, ~ as.numeric(ifelse(nchar(.x) == 2, paste0(.x, 0), .x))/10),
+    p_freezing = map_dbl(temperature, ~ pnorm(32, .x, 2)),
+    response = ifelse(response == "Yes", 1, 0),
+    ResponseId = factor(ResponseId)
+  )
+
+priors_exp1_padilla = c(
+  prior(normal(1, 2), class = b, nlpar = beta),
+  prior(normal(0, 2), class = b, nlpar = alpha),
+  prior(normal(0, 2), class = sd, nlpar = beta),
+  prior(normal(0, 2), class = sd, nlpar = alpha),
+  prior(lkj(2), class = cor)
+)
+
+fit_exp1_padilla = brm(
+  bf(
+    response ~ alpha + beta * (logit(p_freezing) - logit(0.16667)),
+    alpha ~ 0 + condition + (1 | group | ResponseId),
+    beta ~ 0 + condition + (1 | group | ResponseId),
+    nl = TRUE
+  ),
+  family = bernoulli(link = "logit"),
+  data = exp1_long_padilla,
+  chains = 4,
+  cores = 4,
+  iter = 4000,
+  warmup = 2000,
+  refresh = 400,
+  prior = priors_exp1_padilla,
+  backend = "cmdstanr",
+  file = "../cache/_model_fits/00-exp1_padilla.rds"
+)
+
+fit_exp1_padilla
+```
+
+Note that the results for the $\beta$ parameter are similar to the results in both of our studies. On the other hand, there appears to be some difference in the estimate of $\alpha$ parameter, but in two of the four conditions in their study, they find effects in the same direction.
+
+## Experiment 3
+
+We conduct Experiment 3 as a robustness check due to a mistake in the instructions in Experiment 1. In the p-box conditions, we described each forecast as "reliable", while in the ensemble condition, we described each forecast as "equally reliable". The goal of experiment 3 was to determine whether this difference could have had an impact on the results. Besides this difference, we keep everything the same in our analysis.
+
+```{r, expt-3}
+df_exp3 = read.csv("../data/study-final-3/anonymised-data.csv") |> 
+  mutate(block = factor(block, levels = c("single", "multiple"))) |> 
+  left_join(
+    rename(exp.design, trial = index), # in exp.design, index indicates the trial id
+    by = c("block", "trial")
+  ) |> 
+  filter(trial < 100)
+
+head(df_exp3)
+```
+
+
+```{r}
+df_exp3_all_forecast.list = df_exp3 |> 
+  prepare_standata_study1(.id = "user_id") |> 
+  add_list_vars(
+    "X" = matrix(as.integer(c(df_exp3$phrasing == "reliable", df_exp3$phrasing == "equally_reliable")), ncol = 2),
+    K = 2,
+    M = 2
+  )
+
+model_all_forecasts = cmdstan_model("./stan_models/03-model-complete_forecasts-all_effects.stan")
+
+if (FLAG_RUN_MODEL) {
+  fit_final_exp3 = model_all_forecasts$sample(
+      data = df_exp3_all_forecast.list,
+      iter_warmup = 4000, 
+      iter_sampling = 4000, 
+      chains = 4,
+      parallel_chains = 4, 
+      refresh = 400,
+      thin = 4
+    )
+  
+  draws.fit_exp3 = as_draws_df(fit_final_exp3)
+  saveRDS(fit_final_exp3, "../cache/_model_fits/06-fit_final_study3.rds")
+} else {
+  fit_final_exp3 = readRDS("../cache/_model_fits/06-fit_final_study3.rds")
+}
+```
+
+
+### Results
+
+```{r}
+draws.fit_exp3 = as_draws_df(fit_final_exp3)
+
+draws.fit_exp3 |> 
+  select(-starts_with("r"), -starts_with("z"), -starts_with("sd"), -starts_with("L")) |> 
+  mutate(
+    gamma1 = map_dbl(`b_gamma[1]`, gtools::inv.logit),
+    gamma2 = map_dbl(`b_gamma[2]`, gtools::inv.logit)
+  ) |>
+  summarise_draws(mean, sd, quantile2, rhat, ess_bulk, ess_tail) |> 
+  mutate_if(is.numeric, ~ round(., 2))
+```
+
+
+```{r}
+df_exp2_parameters = draws.fit_exp3 |>
+  spread_draws(b_alpha, b_beta, b_gamma[phrasing], sd_gamma) |> 
+  mutate(
+    .value = map2_dbl(b_gamma, sd_gamma, ~ logitnorm::momentsLogitnorm(mu = .x, sigma = .y)[[1]]),
+  ) |> 
+  select(-b_gamma, -sd_gamma) |> 
+  pivot_wider(values_from = .value, names_from = "phrasing", names_prefix = "b_gamma_")
+```
+
+The estimates below suggest that there is likely little or no differnce between the conditions:
+
+```{r}
+df_exp2_parameters |> 
+  select(-c(b_alpha, b_beta)) |> 
+  pivot_longer(starts_with("b_gamma"), names_to = "parameter", names_prefix = "b_gamma_", values_to = ".value") |> 
+  mutate(parameter = ifelse(parameter == 1, "reliable", "equally reliable")) |> 
+  group_by(parameter) |> 
+  median_qi(.value)
+```
+
+
+```{r}
+df_exp2_parameters |> 
+  mutate(.diff = b_gamma_1 - b_gamma_2) |> 
+  median_qi(.diff)
+```

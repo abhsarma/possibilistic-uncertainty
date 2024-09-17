@@ -1,0 +1,952 @@
+---
+title: 'Simulation of participant behavior to determine sensitivity of the experimental stimuli'
+output: 
+  html_document:
+    code_folding: hide
+date: "2024-02-10"
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)
+library(dplyr)
+library(purrr)
+library(tibble)
+library(ggplot2)
+library(gtools)
+library(tidybayes)
+library(ggdist)
+library(cowplot)
+library(distributional)
+library(bayesplot)
+library(cmdstanr)
+library(posterior)
+library(SBC)
+
+# set up the global theme
+theme_set(theme_minimal())
+
+# redefine the default color scheme
+palette = c("#e63946", "#457b9d", "#77c6c6", "#780000", "#fed9b7", "#cce6c3", "#7398f0") 
+
+scale_colour_data = function() {
+  scale_colour_manual(values = palette)
+}
+
+scale_fill_data = function() {
+  scale_fill_manual(values = palette)
+}
+
+cache_dir = "../cache/_mixture_model_SBC/"
+
+## helper functions
+prepare_standata = function(data, .id) {
+  pid = factor(data[[.id]])
+  
+  list(
+    "N" = nrow(data),
+    "Y" = data$response,
+    "pid" = as.integer(pid),
+    "n_pid" = length(unique(as.integer(pid))),
+    "P_upper" = data$.upper,
+    "P_lower" = data$.lower
+  )
+}
+
+add_list_vars = function(.stan_list, ...) {
+  .vars = enquos(...)
+  .new_vars = map(.vars, rlang::eval_tidy)
+  
+  append(.stan_list, .new_vars)
+}
+
+random_str = function(len) {  stringi::stri_rand_strings(1, len) }
+
+FLAG_RUN = FALSE
+```
+
+
+## Introduction
+
+Let us assume that we have uncertainty estimates from several different sources or models. This raises the question of how uncertainty from different sources can be represented and how should they be aggregated for easier decision making? We consider three different ways of visualising the distributions from multiple sources---ensembles, averages and p-boxes
+
+One of the more commonly used ways of representing uncertainty from various sources is to present them as ensmebles (left); ensembles present a number of superimposed distributions together in the same plot. This is arguably the most transparent, as it communicates all the information that is available to the reader.
+
+Alternatively, another approach would be to simply aggregate the distributions by averaging them into a single distribution (middle). This rests on the assumption that each of the distribution is equally likely (i.e. a uniform second-order prior over the set of distributions) which is justified according to the Principle of Indifference. However, decision theorists consider this to be a very strong, and often unrealistic assumption; the lack of information about which is the correct model is considered to be an ambiguous situation, and ambiguity over the set of models is not the same as considering each model to be equally likely. 
+
+Finally, probability bounds analysis theory [@Williamson, @Ferson] suggests that there may be instances where we cannot treat these distributions as equally likely, and hence we should not average over them. Instead, a more theoretically sound treatment of these distributions would be to treat them as *possible* bounds for the parameter being estimated. These bounds can be represented using p-boxes.
+
+```{r, fig.height = 2.5, fig.width = 12}
+N = 6
+sim_df = tibble(
+    index = 1:N,
+    mu = map_dbl(sample(c(0.1, 0.91, 0.33, 0.48, 0.65, 1.04)), ~ rnorm(1, ., 0.02)),
+    sd = rnorm(N, 0.2, 0.02)
+  ) |> 
+  mutate(
+    x = map(index, ~ seq(-0.5, 2, by = 0.01)),
+    y = pmap(list(x, mu, sd), ~ pnorm(..1, ..2, ..3))
+  ) |>
+  unnest(c(x, y))
+
+p.vline = c(
+  geom_vline(xintercept = 0, linewidth = 0.2)
+)
+
+p1 = sim_df |> 
+  ggplot(aes(x, y, group = factor(index))) +
+  geom_line(alpha = 0.5) +
+  scale_y_continuous(breaks  = seq(0, 1, by = 0.2)) +
+  labs(x = "Temperature (in C)") +
+  p.vline
+
+p2 = sim_df |> 
+  group_by(x) |> 
+  summarise(y = mean(y)) |> 
+  ggplot(aes(x, y)) +
+  geom_line(alpha = 0.5) +
+  scale_y_continuous(breaks  = seq(0, 1, by = 0.2)) +
+  labs(x = "Temperature (in C)") +
+  p.vline
+
+p3 = sim_df |> 
+  group_by(x) |> 
+  summarise(y.lower = min(y), y.upper = max(y)) |> 
+  ggplot() +
+  geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper), fill = "#a8dadc", alpha = 0.7) +
+  scale_y_continuous(breaks  = seq(0, 1, by = 0.2)) +
+  labs(x = "Temperature (in C)") +
+  p.vline
+
+plot_grid(p1, p2, p3, ncol = 3)
+```
+
+
+### Decision making under uncertainty from a single model
+
+Let us consider the decision making scenario which is adapted from Padilla et al.:
+
+> Assume that you work at the Red Cross, and your job is to manage resources for farms in Peru. In previous years, alpacas have died in Peru from cold temperatures. Alpacas can typically withstand the cold unless the temperature drops below 0° C (32° F). You are in charge of the Red Cross’s blanket budget, and it is your job to issue blankets to the alpacas when temperatures fall below 32° F, which will help them withstand the cold. You have a budget for 18 days of $18,000. Purchasing and delivering blankets to farmers costs $1,000 (per night). If you fail to issue blankets to the farmers and the temperature drops below 32° F, it will cost $5,000 from your budget. You are shown a night-time temperature forecast distribution. Based on this forecast, you have to decide whether to issue blankets to the alpacas.
+
+Assume that we have a perfectly rational decision maker, i.e. one who is able to make decisions which perfectly optimise the incentives. The decision maker is tasked to incentivise the following incentive scheme:
+
+<table>
+<caption><span id="tab:table2">Table 1: </span>Incentives</caption>
+                          $s_1: T<= 0$      $s_2: > 0$
+-----------             ---------------   ---------------
+$a_1$: send                    -1               -1
+$a_2$: $\neg$ send             -5                0
+</table>
+
+Based on the incentives described above, the expected utility of any action is given by:
+
+$$
+\begin{align*}
+\text{let, } \mathbb{E}[U(a_i)] &= \sum\limits_{s_j} P(s_j) u_{ij} \\
+&= u_{i1}P(s_1) + u_{i2}(1 - P(s_1)) \\
+\mathbb{E}[U(a_1)] &= u1 &\text{ since } u_{11} = u_{12}; \text{ let } u_{11} = u_1 \\
+\mathbb{E}[U(a_2)] &= u_2P(s_1) &\text{ since } u_{22} = 0; \text{ let } u_{21} = u_2 \\ 
+ &= u_2p & \text{since } {P(s_2) = 1 - P(s_1)} \text{, let } P(s_1) = p \\
+\end{align*}
+$$
+
+where, $s_1 := T \leq 0$ and $s_2 := T > 0$
+
+When presented with a single forecast, a participant should decide to send blankets if the probability of freezing ($P(s_1)$) is greater than 20%. We can describe participants' decision to send blankets is determined by:
+
+$$
+\begin{align*}
+\mathbb{E}[U(a_1)] &> \mathbb{E}[U(a_2)] \\
+u_1 &> u_2p \\
+-1 &> -5p \\
+p &> 0.2 \\
+\mathrm{logit}(p) &> \mathrm{logit}(0.2) \\
+\mathrm{logit}(p) - \mathrm{logit}(0.2) &> 0  \\
+\mathrm{logit}(p_\mathtt{SEND}) = \alpha + \beta \cdot [\mathrm{logit}(p) - \mathrm{logit}(0.2)] &> \mathrm{logit}(0.5) \\
+\end{align*}
+$$
+
+The parameters $\alpha$ and $\beta$ reflect the bias and variance in participants' responses. Thus, we obtain the following model.
+
+$$
+\begin{align*}
+decision \sim \mathrm{Binomial}(p_\mathtt{SEND}) \\
+\mathrm{logit}(p_\mathtt{SEND}) = \alpha + \beta \cdot [\mathrm{logit}(p) - \mathrm{logit}(0.2)] &> \mathrm{logit}(0.5) \\
+\end{align*}
+$$
+
+We can also define $p = 0.2$ as the optimal crossover point---the point at which the decision makers' preference would flip from sending to not sending blankets.
+
+### Decision making under uncertainty from multiple models
+
+Modeling participants' expected behavior for multiple forecasts is more challenging, as discussed in `01-theory.Rmd`. Based on the literature from decision theory, we identify a $\alpha$-maxmin model to be appropriate.
+
+$$
+\begin{align*}
+\text{let, } \mathbb{E}[U(a_i)] &= \sum\limits_{s_j} P_k(s_j) u_{ij} & \text{ for any } P_k \in \mathcal{P}\\
+\mathbb{E}[U(a_1)] &= u1  \\
+\mathbb{E}[U(a_2)] &= u_2P_k(s_1)  \\
+&= u_2p_k
+\end{align*}
+$$
+where, $\mathcal{P}$ is the set of all probability distributions.
+
+In decision theory, the $\alpha$-maxmin decision rule (which we will refer to as $\gamma$-maximin decision rule to avoid confusion with the $\alpha$ used to denote the parameters of the linear in logit model previously) is considered to be a somewhat less conservative but no less rational rule for decision making under ambiguity. It is possible that participants instead view the set of forecasts as a continuous space of all possible models and perceive the utility of any action ($a_i$) as:
+
+$$
+\begin{align*}
+\mathbb{E}_{\gamma}[U(a_i)] &= \gamma\max\limits_{k} \{ \mathbb{E}[u(a_i, s_j)] \} + (1 - \gamma)\min\limits_{k} \{\mathbb{E}[u(a_i, s_j)]\} \\
+\mathbb{E}_{\gamma}[U(a_1)] &= \gamma \max\limits_{k}\{ u_1 \cdot p_k + u_1 \cdot (1 - p_k)) \} + (1 - \gamma) \min\limits_{k}\{ u_1 \cdot p_k + u_1 \cdot (1 - p_k) \} \\
+&= u_1 \\
+\mathbb{E}_{\gamma}[U(a_2)] &= \gamma \max\limits_{k}\{ u_2 \cdot p_k \} + (1 - \gamma) \min\limits_{k}\{ u_2 \cdot p_k) \} \\
+ &= u_2[ \gamma \max\limits_{k}\{ p_k \} + (1 - \gamma) \min\limits_{k}\{p_k\} ]
+\end{align*}
+$$
+Note that since the utility $u_2$ is negative the maximum expected utility is realised when the probability ($\Phi_k(\frac{x - \mu_k}{\sigma_k})$) is minimised (and vice versa). Thus, a decision maker applying the $\alpha$-maxmin decision rule can be characterised as performing the same expected utility maximisation task with the following (hypothetical) forecast distribution: 
+
+$$
+\begin{align*}
+\text{let, } \hat{p} &= \gamma \max\limits_{k}\{ p_k \} + (1 - \gamma) \min\limits_{k}\{ p_k \} \\
+\implies \mathbb{E}_{\gamma}[U(a_2)] &= u_2\hat{p}
+\end{align*} 
+$$
+
+Given this conceptual model, we can describe the decision that a user has to make as *choosing to send blankets* if:
+
+$$
+\begin{align*}
+\mathbb{E}[U(a_1)] &> \mathbb{E}[\hat{U}(a_2)] \\
+u_1 &> u_2\hat{p} \\
+-1000 &>-5000 \hat{p} \\
+\hat{p} &> u_1 / u_2 = 0.2 \\
+\mathrm{logit}(\gamma p^+ + (1 - \gamma) p_-) - \mathrm{logit}(0.2) &> 0 \\
+\mathrm{logit}(p_\mathtt{SEND}) = \alpha + \beta \cdot [\mathrm{logit}(\gamma p^+ + (1 - \gamma) p_-) - \mathrm{logit}(0.2)] &> \mathrm{logit}(0.5) \\
+\end{align*}
+$$
+
+## Parameters in a linear-in-logit model
+
+The above equation formulates the problem in terms of a linear model. But what do these parameters mean? we can visualise them in the log-odds scale and the actual scale below:
+
+```{r, fig.height = 8, fig.width = 16}
+df.parameters = expand_grid(
+  alpha = c(-1.5, 0, 1, 2),
+  beta = c(0.5, 1, 2, 3),
+  p_true = seq(0.01, 0.99, by = 0.01)
+) |> 
+  mutate(
+    p_send = inv.logit(alpha + beta*(logit(p_true) - logit(0.2)))
+  )
+
+p1.logit = df.parameters |> 
+  ggplot() +
+  geom_line(aes(x = p_true, y = p_send, group = beta, colour = beta)) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.2)) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.2)) +
+  geom_hline(yintercept = 0.5, alpha = 0.5, lty = 2) +
+  facet_grid(. ~ alpha) +
+  labs(x = "Pr(T ≤ 0)", y = "Pr(send)") +
+  scale_colour_gradient2(low = "#2F938E", mid = "#90D3CC", high = "#474E84")
+  
+
+p2.logit = df.parameters |> 
+  ggplot() +
+  geom_line(aes(x = p_true, y = p_send, group = alpha, colour = alpha)) +
+  geom_hline(yintercept = 0.5, alpha = 0.5, lty = 2) +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.2)) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.2)) +
+  facet_grid(. ~ beta) +
+  labs(x = "Pr(T ≤ 0)", y = "Pr(send)") +
+  scale_colour_gradient2(low = "#2F938E", mid = "#90D3CC", high = "#474E84")
+
+p1.linear = df.parameters |> 
+  ggplot() +
+  geom_line(aes(x = logit(p_true), y = logit(p_send), group = beta, colour = beta)) +
+  facet_grid(. ~ alpha) +
+  labs(x = "Pr(T ≤ 0)", y = "Pr(send)") +
+  scale_colour_gradient2(low = "#2F938E", mid = "#90D3CC", high = "#474E84")
+
+p2.linear = df.parameters |> 
+  ggplot() +
+  geom_line(aes(x = logit(p_true), y = logit(p_send), group = alpha, colour = alpha)) +
+  facet_grid(. ~ beta) +
+  labs(x = "Pr(T ≤ 0)", y = "Pr(send)") +
+  scale_colour_gradient2(low = "#2F938E", mid = "#90D3CC", high = "#474E84")
+
+# pdf(file = "../figures/paper/study1-alpha_beta.pdf", useDingbats = FALSE, width = 10, height = 5)
+cowplot::plot_grid(p1.logit, p2.logit, p1.linear, p2.linear, ncol = 1)
+# dev.off()
+```
+
+## Simulation
+
+Next, we explore whether our experimental stimuli is sufficiently sensitive to potential noise in participants' responses such that we will be able to distinguish between various strategies adopted by participants. To do so, we will first try to simulate data which has a similar degree of variance as the data collected by Padilla et al. in responding to a single probability forecast. We will then iteratively define and refine a set of regression models with the goal of building up to a model which is able to:
+
+1. correctly determine the linear (in logit) coefficients which predicts participants' responses
+2. correctly represent the strategies that participants are using to respond to the stimuli
+
+## Determining the variance in participants' responses
+
+We first use the data collected by Padilla et al. to use as prior information for how participants might behave in this task. We load their responses: 
+
+```{r, eval = FALSE}
+sigma = 2 # of the stimuli in the padilla et al. study
+
+exp1_long = read.csv("../data/padilla-exp1_2019.csv") |> 
+  filter(row_number() > 2) |> 
+  select(ResponseId, contains("alpaca")) |> 
+  pivot_longer(cols = contains("alpaca"), names_to = "trials", names_prefix = "alpaca_", values_to = "response") |> 
+  separate_wider_delim(trials, names = c("temperature", "condition"), delim = "_") |> 
+  filter(condition == "no") |> 
+  mutate(
+    temperature = map_dbl(temperature, ~ as.numeric(ifelse(nchar(.x) == 2, paste0(.x, 0), .x))/10),
+    temp_opt = temperature + qnorm(1/6, -32, sigma),
+    response = ifelse(response == "Yes", 1, 0),
+    ResponseId = factor(ResponseId)
+  )
+
+mod_exp1 = readRDS("../data/padilla-exp1_model1.rds")
+```
+
+Padilla et al. use a metric known as the crossover point---the mean of the distribution (presented in the forecast) at which a participant switches from sending blankets to not sending blankets.
+
+We compute the estimated crossover temperatures for each participant (i.e. calculating the random intercept for each participant). After removing outliers using Tukey's fences, in the condition analogous to the first block of our experiment (where participants only shown only a single forecast distribution), participants' average crossover temperature was approximately 33.7 (-0.26F less than the optimal crossover temperature) and the standard deviation in the participants' responses was approximately 0.75.
+
+```{r, eval = FALSE}
+crossover = exp1_long |> 
+  expand(ResponseId, condition = "No_communication", temp_opt = c(0,1)) |> 
+  add_linpred_draws(mod_exp1, re_formula = ~ (temp_opt + condition | ResponseId), seed = 123, ndraws = 1000) |> 
+  ungroup() |> 
+  select(-.row) |> 
+  pivot_wider(names_from = temp_opt, names_prefix = "g", values_from = .linpred) |> 
+  mutate(crossover = -g0/(g1 - g0))
+
+IQR = quantile(crossover$crossover, probs = 0.75) - quantile(crossover$crossover, probs = 0.25)
+
+crossover |> 
+  filter((crossover > quantile(crossover, probs = 0.25) - 1.5*IQR) & (crossover < quantile(crossover, probs = 0.75) + 1.5*IQR)) |> 
+  ggplot() +
+  geom_histogram(aes(crossover))
+```
+
+
+```{r, eval = FALSE}
+IQR = quantile(crossover$crossover, probs = 0.75) - quantile(crossover$crossover, probs = 0.25)
+
+crossover |> 
+  filter((crossover > quantile(crossover, probs = 0.25) - 1.5*IQR) & (crossover < quantile(crossover, probs = 0.75) + 1.5*IQR)) |> 
+  summarise(sd = sd(crossover))
+```
+
+
+### Estimating parameters to be used as priors
+
+Now that we have some notion of what the the mean and standard deviation of the crossover points are, we can simulate participants' responses and determine the parameters which lead to a similar degree of variance (in the crossover temperature). In other words, we will simulate participants' responses assuming the same data generating process as Padilla et al. but with seed values for the parameters. We will then fit a model and iteratively refine these parameters until we obtain the same variance in the crossover temperature.
+
+## Stimuli generation
+
+However, before we generate participants responses, we need to create a set of stimuli that the participants will be responding to. Recall from `02-stimuli-gen.Rmd` that the experiment consists of two phases:
+
+- phase #1: participants are shown a single forecast
+- phase #2: participants are shown multiple forecasts
+
+### Optimal crossover point
+
+Based on the set of forecasts, we calculate the optimal crossover temperature. Assume that we have a perfectly rational decision maker, i.e. one who is able to make decisions which perfectly optimise the incentives; the optimal crossover point is the forecast distribution (parameterised by the mean of the distribution) at which the decision makers' preference would flip from sending to not sending blankets. From Padilla et al., to determine the optimal crossover temperature, we need to find a Normal distribution, $X \sim \textrm{Normal}(\mu, \sigma)$, with $sigma$ = 2.08 and unknown $mu$ such that $P(X \le 32) = 1/5$. Thus:
+
+$$
+\begin{align*}
+P(X \le 32) \sim \textrm{Normal}(\mu, \sigma) &= 1/5 && \textrm{for }X\\
+P(X' > \mu) &= 1/5 && \textrm{for }X' \sim \textrm{Normal}(32, \sigma)\\
+1 - F_\textrm{Normal}(\mu|32,\sigma) &= 1/5\\
+\mu &= F_\textrm{Normal}^{-1}(1-1/5|32,\sigma)
+\end{align*}
+$$
+
+Thus, the optimal crossover temperature for the stimuli generated above is:
+
+```{r}
+(T_opt = qnorm(1 - 1/5, 32, 2.08)) # 2.08 is the value of sigma that we use
+```
+
+In other words, if the mean of the distribution is less than ~33.75, than we should send blankets, and if it is greater than ~33.75, we should not send blankets. We use $\sigma = 2.08$ for the forecast distribution such that the optimal crossover point (the point at which a completely rational agent working to maximise their expected utility switches from sending to not sending blankets) is approximately halfway between two forecasts (since the forecasts start at $\mu = 30$ with intervals ($\Delta(\mu) = 0.5$. This is an alternative way of thinking about the forecast dsitributions, as the forecasts are generated as normal distributions parameterised by mean and standard deviation.
+
+
+### Simulating stimuli
+
+Next, we simulate a set of stimuli which can be used in this experiment. The simulations consist of 18 temperature forecast (shown as a distribution), with varying means:
+
+```{r, eval = FALSE}
+sim_dist = tibble(
+    index = 1:ntrials,
+    mu = seq(start, start + interval.width*(ntrials-1), length.out = ntrials),
+    sd = c(rnorm(8, sigma, 0.15), sigma, sigma, rnorm(ntrials - 10, sigma, 0.15))
+  ) |> 
+  mutate(dist = map2(mu, sd, dist_normal))
+
+xlims = c(22, 46)
+
+sim_dist.pnorm = sim_dist |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.01)),
+    y = map2(dist, x, ~ cdf(.x, .y)[[1]])
+  ) |>
+  unnest(c(x, y))
+```
+
+To ensure consistency, across the various files used in this project, we declare the parameters for generating the stimuli (and the data for the stimuli itself) in a separate R script. 
+
+```{r}
+source("00-experiment-parameters.R")
+```
+
+Below we visualise the forecasts, as well as the decisions that a rational decision maker would make for each forecasts:
+
+```{r, fig.height = 4, fig.width = 9}
+data_labels = sim_dist.pnorm |> 
+  group_by(index) |> 
+  filter(round(y, 2) == round(0.8 - index/40, 2)) |> 
+  sample_n(1)
+
+sim_dist.pnorm |> 
+  mutate(
+    `Pr(T < 32)` = map_dbl(dist, ~ cdf(.x, 32)), # estimated probability of freezing (based on forecast)
+    send = ifelse(`Pr(T < 32)` < 1/5, FALSE, TRUE) # assumming a perfectly rational decision maker
+  ) |> 
+  ggplot(aes(x, y)) +
+  geom_vline(xintercept = 32, colour = "#666666") +
+  geom_line(aes(group = factor(index), colour = send)) +
+  geom_label(data = data_labels, aes(label = index), size = 3) +
+  scale_y_continuous(breaks  = seq(0, 1, by = 0.2)) +
+  scale_x_continuous(limits = xlims, breaks = seq(22, 46, by = 2)) +
+  scale_colour_data()
+```
+
+Next, we visualise multiple forecasts using either CDFs or p-boxes. The challenge here is that, when provided with multiple forecasts, we cannot determine a rational crossover temperature. This is because multiple valid strategies exist: pessimistic (or maximin), optimistic (or maximax), an $\alpha$-maxmin strategy or a median/average-based strategy (see `01-theory.Rmd` for a more detailed explanation).
+
+However, if we interpret the set of forecasts as representing possibilistic uncertainty, we should make decisions based on the bounds of the forecast (e.g., using the pessimistic strategy). Below, we calculate the crossover points for each strategy:
+
+```{r, eval = FALSE}
+size = 7
+ngroups = ntrials - size + 1
+
+sim_dist.groups = tibble(
+  group = 1:ngroups
+) |> 
+  mutate(
+    data = list(sim_dist),
+    data = map2(data, group, ~ filter(.x, index >= .y & index < .y + size))
+  )
+```
+
+
+```{r}
+sim_dist.groups_decisions = sim_dist.groups |> 
+  unnest(c(data)) |> 
+  group_by(group) |> 
+  summarise(index = list(index), dist = list(dist)) |> 
+  mutate(
+    pessimistic = map(dist, ~ .x[[1]]),
+    average = map(dist, ~ .x[[4]]),
+    optimistic = map(dist, ~ .x[[7]]),
+  ) |> 
+  pivot_longer(cols = c(pessimistic, average, optimistic), names_to = "strategy", values_to = "reference") |> 
+  mutate(
+    p = map_dbl(reference, ~ cdf(., 32)),
+    send = map_lgl(p, ~ ifelse(. > 0.2, TRUE, FALSE))
+  )
+```
+
+We then visualise the decisions that a rational decision-maker should make when presented with these aggregated forecasts, under each of the three strategies:
+
+```{r, fig.height = 5, fig.width = 16}
+sim_dist.groups.pnorm = sim_dist.groups_decisions |> 
+  unnest(c(index, dist)) |> 
+  mutate(
+    x = map(index, ~ seq(xlims[1], xlims[2], by = 0.01)),
+    y = map2(dist, x, ~ cdf(.x, .y)[[1]])
+  ) |>
+  unnest(c(x, y)) |> 
+  group_by(group, x, strategy, send) |> 
+  summarise(y.lower = min(y), y.upper = max(y), .groups = "drop")
+
+sim_dist.groups.pnorm |> 
+  ggplot() +
+  geom_vline(xintercept = 32, colour = "#666666") +
+  geom_ribbon(aes(x = x, ymin = y.lower, ymax = y.upper, fill = send), colour = "#333333", alpha = 0.8, linewidth = 0.15) +
+  scale_y_continuous(breaks  = seq(0, 1, by = 0.2)) +
+  scale_x_continuous(limits = c(22, 46)) +
+  facet_grid(strategy ~ group) +
+  scale_fill_data()
+```
+
+
+### Other Preliminaries
+
+We create a data frame which stores the experiment design in a single data frame:
+
+```{r, eval = FALSE}
+# this is the template of the experiment
+# that each participant will be performing
+exp.design = rbind(
+  sim_dist |> 
+    group_by(index) |> 
+    mutate(block = "single"),
+  sim_dist.groups |> 
+    unnest(c(data)) |> 
+    select(-index) |> 
+    rename(index = group) |> 
+    mutate(block = "multiple")
+  ) |> 
+  mutate(p_true = map_dbl(dist, ~ cdf(.x, 32))) |> 
+  group_by(block, index) |> 
+  summarise(mu = list(mu), sd = list(sd), dist = list(dist), p_true = list(p_true), .groups = "keep") |> 
+  mutate(
+    .upper = map_dbl(p_true, min),                             # min(p_true) corresponding to the upper bound of the p-box
+    .lower = map_dbl(p_true, max),                             # max(p_true) corresponding to the lower bound of the p-box
+  )
+
+delta = 1.5
+```
+
+
+## 1. (Intro to) Modeling: looking only at CDFs
+
+We start with a basic model where we first generate some simulated data holding parameters at fixed values to see if the specified model can recover the parameters. This stepwise approach helps us determine whether our models are correct. First, we look at whether our model is able to predict the average / median probability of a positive response from the data. In this model, we only consider the trials where a participant is presented with CDFs
+
+```{r}
+generate_data.single_forecast = function(.seed, design, n) {
+  set.seed(.seed)
+  
+  a = 0.2; b = 2; sd_a = 1; sd_b = 1; sd_a_j = 0.25; sd_b_j = 0.25; 
+  
+  tibble(
+      id = 1:n, # number of participants
+      pid = map_chr(id, ~ random_str(12)), # assign a unique id to each participant
+      a_bar = rnorm(n, a, sd_a),
+      b_bar = rnorm(n, b, sd_b)
+    ) |> 
+    mutate(
+      data = list(design),
+      a_j = map(a_bar, ~ rnorm(nrow(design), .x, sd_a_j)),
+      b_j = map(b_bar, ~ rnorm(nrow(design), .x, sd_b_j))
+    ) |>
+    unnest(c(data, a_j, b_j)) |>
+    mutate(
+      p_send = pmap_dbl(list(p, a_j, b_j), ~ inv.logit(..2 + ..3*(logit(..1) - logit(0.2)))),
+      response = map_dbl(p_send, ~ rbinom(1, 1, .x))
+    )
+}
+
+sim_data.single = generate_data.single_forecast(1234, mutate(sim_dist, p = map_dbl(dist, ~ cdf(., 32))), 100) |> 
+  select(pid, p, p_send, response)
+
+sim_data.single |> 
+  ggplot() +
+  geom_line(aes(p, p_send, group = pid), alpha = 0.2) +
+  labs(x = "Pr(T ≤ 0)", y = "Pr(send blankets)")
+```
+
+
+```{r, model-single-forecast}
+sim_data.single.list = list(
+  "N" = nrow(sim_data.single),
+  "Y" = sim_data.single$response,
+  "pid" = as.integer(factor(sim_data.single$pid)),
+  "n_pid" = length(unique(as.integer(factor(sim_data.single$pid)))),
+  "X" = sim_data.single$p,
+  "M" = 1,
+  "Z" = rep(1, nrow(sim_data.single))
+)
+
+model_single_forecast = cmdstan_model("./stan_models/01-model-single_forecasts.stan")
+
+if (FLAG_RUN) {
+  fit_single_forecast = model_single_forecast$sample(
+    data = sim_data.single.list,
+    iter_warmup = 2000, 
+    iter_sampling = 2000, 
+    chains = 4,
+    parallel_chains = 4, 
+    refresh = 400,
+    # adapt_delta = 0.95,
+    thin = 2
+  )
+  
+  draws.fit_single_forecast = as_draws_df(fit_single_forecast)
+  saveRDS(fit_single_forecast, "../cache/_model_fits/01-simulation-fit_single_forecast.rds")
+} else {
+  fit_single_forecast = readRDS("../cache/_model_fits/01-simulation-fit_single_forecast.rds")
+}
+```
+
+
+```{r, eval = FALSE}
+draws.fit_single_forecast = as_draws_df(fit_single_forecast) |> 
+  select(-starts_with("z"), -starts_with("r"), -starts_with("L")) |> 
+  rename(`sd_alpha` = `sd_1[1]`, `sd_beta` = `sd_2[1]`)
+
+# a = 0.2; sd_a = 1
+# b = 2; sd_b = 1
+draws.fit_single_forecast |> 
+  summarise_draws(mean, sd, quantile2, rhat, ess_bulk, ess_tail) |> 
+  mutate_if(is.numeric, ~ round(., 4))
+```
+
+## 2. Modeling $\gamma$-maxmin
+
+The decision making rule for uncertainty from multiple models corresponds to the following statistical model:
+
+$$
+\begin{align*}
+send &\sim \textrm{Binomial}(p) \\
+\mathrm{logit}(p_\mathtt{SEND}) &= \alpha_{[j]} + \beta_{[j]} \cdot [\mathrm{logit}(\gamma_{[j]} p^+ + (1 - \gamma_{[j]}) p_-) - \mathrm{logit}(0.2)] \\
+\alpha_{[j]} &\sim \text{Normal}(\bar{\alpha}, 0.5) \\
+\beta_{[j]} &\sim \text{Normal}(\bar{\beta}, 0.5) \\
+\bar{\alpha} &\sim \text{Normal}(0, 1) \\
+\bar{\beta} &\sim \text{Normal}(0, 1) \\
+\mathrm{logit}(\gamma_{[j]}) &= \omega_{[j]} \\
+\omega_{[j]} &\sim \mathrm{Normal}(\bar{\omega}, 0.5) \\
+\bar{\omega} &\sim \mathrm{Normal}(0, 1)
+\end{align*}
+$$
+
+### A Note on Priors
+
+All of the priors in our model are specified in the log-odds scale. They are also all hierarchical. The priors specified above are weakly regularising. We illustrate the permissible values for the $\gamma$ parameter in the transformed (i.e. log-odds) scale below:
+
+```{r}
+set.seed(1234)
+tibble(
+  N = 500,
+  i = 1:N,
+  w = rnorm(N, 0, 1),
+  dens_w_j = map(w, ~ density(inv.logit(rnorm(30, ., 0.5)))),
+  w_j_x = map(dens_w_j, ~ .$x),
+  w_j_y = map(dens_w_j, ~ .$y)
+) |> 
+  unnest(c(w_j_x, w_j_y)) |> 
+  ggplot() +
+  geom_line(aes(w_j_x, w_j_y, group = i), alpha = 0.1) + labs(x = "gamma", y = "density") +
+  theme(axis.text.y = element_blank())
+```
+
+This shows that $gamma$ can take almost any value between zero and one; the higher density towards the ends of the scale perhaps even suggests that the priors are a bit more diffuse than necessary.
+
+
+We initially began with a mixture model. As such, this is chronologically the fourth class of models that we explored (all before any data was collected). The previous classes of models have assumed that participants will be adopting one of three discrete strategies. However, it is possible that participants instead view the p-box as a continuous space of all possible models and instead make a decision based on their subjective optimism index. This means, the expected probability is defined by an optimism index $\gamma$, a subjective, continuous weight parameter between the upper and lower bound probabilities of the event occuring (which in this case is the probability of the temperature falling below freezing).
+
+```{r}
+generate_data.complete_forecasts = function(.seed, design, n) {
+  set.seed(.seed)
+  
+  a = 0.2; b = 2.3; sd_a = 1; sd_b = 1; sd_a_j = .5; sd_b_j = .5;
+  gamma_linear = -1.4; sd_gamma = 1; sd_gamma_j = .5; # optimism index
+  
+  tibble(
+      id = 1:n,                                                  # number of participants
+      pid = map_chr(id, ~ random_str(12)),                       # assign a unique id to each participant
+      a_bar = rnorm(n, a, sd_a),                                 # random effect for bias for each participant 
+      b_bar = rnorm(n, b, sd_b),                                 # random effect for "degree of distortion" for each participant
+      gamma_bar_linear = rnorm(n, gamma_linear, sd_gamma)        # random effect for gamma for each participant 
+    ) |> 
+    mutate(
+      data = list(design),
+      a_j = map(a_bar, ~ rnorm(nrow(design), .x, sd_a_j)),       # some noise
+      b_j = map(b_bar, ~ rnorm(nrow(design), .x, sd_b_j)),
+      gamma_j = map(gamma_bar_linear, ~ gtools::inv.logit(rnorm(nrow(design), .x, sd_gamma_j)))
+    ) |>
+    unnest(c(data, a_j, b_j, gamma_j)) |>
+    mutate(
+      p_sub = map2_dbl(p_true, gamma_j, ~ .y * min(.x) + (1 - .y)* max(.x)), # which curve is being attended to
+      p_send = pmap_dbl(list(p_sub, a_j, b_j), ~ inv.logit(..2 + ..3*(logit(..1) - logit(0.2)))),
+      response = map_dbl(p_send, ~ rbinom(1, 1, .x))
+    )
+}
+```
+
+
+```{r}
+sim_data.logit_p = generate_data.complete_forecasts(1234, exp.design, 100)
+
+sim_data.logit_p |> 
+  filter(block == "single") |> 
+  ggplot() +
+  geom_line(aes(.upper, p_send, group = pid), alpha = 0.1) +
+  geom_line(
+    # a = 0.2; b = 2
+    data = tibble(p = seq(0.01, 0.9, by = 0.01), p_send = inv.logit(0 + 2*(logit(p) - logit(0.2)))),
+    aes(p, p_send), colour = "red"
+  ) +
+  labs(x = "Pr(T ≤ 0)", y = "Pr(send blankets)") +
+  scale_x_continuous(breaks = seq(0, 1, by = 0.2)) +
+  scale_y_continuous(breaks = seq(0, 1, by = 0.2))
+```
+
+The function above simulates the data based on this newly described data generating process. We can then try to fit a model to this data to see if it converges:
+
+```{r, model-multiple-forecast}
+sim_data.logit_p.list = sim_data.logit_p |> 
+  prepare_standata("pid") |> 
+  add_list_vars(
+    is_single = as.integer(sim_data.logit_p$block == "single"),
+    M = 2
+  )
+
+model_logit_all_forecasts = cmdstan_model("./stan_models/02-model-complete_forecasts-logit.stan")
+
+if (FLAG_RUN) {
+  fit_all_forecasts = model_logit_all_forecasts$sample(
+    data = sim_data.logit_p.list,
+    iter_warmup = 1000, 
+    iter_sampling = 1000, 
+    chains = 4,
+    parallel_chains = 4, 
+    refresh = 100
+  )
+  
+  draws.fit_all_forecasts = as_draws_df(fit_all_forecasts)
+  saveRDS(fit_all_forecasts, "../cache/_model_fits/01-simulation-fit_all_forecast.rds.rds")
+} else {
+  fit_all_forecasts = readRDS("../cache/_model_fits/01-simulation-fit_all_forecast.rds.rds")
+}
+```
+
+
+As a final verification step, we explore if the model is able to recover the parameters (which it is):
+
+```{r}
+draws.fit_all_forecasts = as_draws_df(fit_all_forecasts) |> 
+  select(-starts_with("z"), -starts_with("r"), -starts_with("L")) |> 
+  rename(sd_alpha = `sd[1]`, sd_beta = `sd[2]`)
+
+draws.fit_all_forecasts |> 
+  mutate(gamma = map_dbl(Intercept_gamma, gtools::inv.logit)) |>
+  summarise_draws(mean, sd, quantile2, rhat, ess_bulk, ess_tail) |> 
+  mutate_if(is.numeric, ~ round(., 4)) 
+```
+
+The summary estimates suggests that the model converges and is able to recover the underlying parameters well.
+
+### Evaluation and Posterior Predictive Checks
+
+```{r}
+draws.fit_all_forecasts |> 
+  subset_draws(draw = sample(1:4000, 100)) |> 
+  select(-starts_with("sd")) |> 
+  mutate(p_true = list(unlist(exp.design$p_true[1:18]))) |> 
+  unnest(c(p_true)) |> 
+  mutate(p_send = pmap_dbl(list(b_alpha, b_beta, p_true), ~ inv.logit(..1 + ..2*(logit(..3) - logit(0.2))))) |> 
+  ggplot() +
+  geom_line(aes(p_true, p_send, group = .draw), alpha = 0.1) +
+  geom_line(
+    data = tibble(p = seq(0.01, 0.9, by = 0.01), p_send = inv.logit(0.2 + 2.3*(logit(p) - logit(0.2)))),
+    aes(p, p_send), colour = "red"
+  ) 
+```
+
+### Simulation based calibration
+
+Simulation-based calibration [@Talts2020, @Modrak2023] can be used to validate statistical models: it is ``procedure [which] identifies inaccurate computation and inconsistencies in model implementations.'' In other words, we can use the SBC procedure to verify whether our model is actually estimating the data-generating process that we want it to capture. The first step in implementing a SBC procedure is to define a data generator function:
+
+```{r}
+gamma_maxmin_data_generator = function(design, n) { # n: number of participants
+  ntrials = nrow(design)
+  
+  a = rnorm(1, 0, 1)      # in the model above sigma = 1
+  b = rnorm(1, 1, 1)      # in the model above sigma = 1
+  gamma = rnorm(1, 0, 1)
+  sd_a_j = .5
+  sd_b_j = .5
+  sd_gamma_j = .5
+  
+  dat = tibble(
+    pid = sample(1:n, n),
+    a_j = rnorm(n, a, sd_a_j),
+    b_j = rnorm(n, b, sd_b_j),
+    gamma_j = inv.logit(rnorm(n, gamma, sd_gamma_j))
+  ) |> 
+    mutate(data = list(design)) |>
+    unnest(c(data)) |> 
+    mutate(
+      is_single = ifelse(class == "single", 1, 0),
+      .upper = map_dbl(p_true, min),             # min(p_true) corresponding to the upper bound of the p-box
+      .lower = map_dbl(p_true, max),             # max(p_true) corresponding to the lower bound of the p-box
+      p_sub = map2_dbl(p_true, gamma_j, ~ .y * min(.x) + (1 - .y)* max(.x)), # which curve is being attended to
+      p_send = pmap_dbl(list(p_sub, a_j, b_j), ~ inv.logit(..2 + ..3*(logit(..1) - logit(0.2)))),
+      response = map_dbl(p_send, ~ rbinom(1, 1, .x))
+    )
+  
+  list(
+    variables = list(
+      b_beta = b,
+      b_alpha = a,
+      Intercept_gamma = gamma
+    ),
+    generated = list(
+      N = n*ntrials,
+      Y = dat$response,
+      P_upper = dat$.upper,
+      P_lower = dat$.lower,
+      pid = dat$pid,
+      n_pid = n,
+      M = 2,
+      is_single = dat$is_single
+    )
+  )
+}
+```
+
+Next, we implement the SBC workflow using the [SBC R library](https://hyunjimoon.github.io/SBC/articles/SBC.html). Because the following code takes a while to run, we split it up into multiple smaller chunks (each of which takes ~30-45 mins). You should be able to load the results without having to recomput it.
+
+
+```{r, SBC}
+# this was run on a different (faster) machine
+# do not run and skip to the next code block
+model_logit_all_forecasts = cmdstan_model("./stan_models/02-model-complete_forecasts-logit.stan")
+gen_m_all_forecasts = SBC_generator_function(gamma_maxmin_data_generator, exp.design, 80)
+backend_m_all_forecasts = SBC_backend_cmdstan_sample(model_logit_all_forecasts, chains = 2)
+
+set.seed(1234)
+if (FLAG_RUN) {
+  ds_m_all_forecasts.1 = generate_datasets(gen_m_all_forecasts, n_sims = 50)
+  ds_m_all_forecasts.2 = generate_datasets(gen_m_all_forecasts, n_sims = 50)
+  ds_m_all_forecasts.3 = generate_datasets(gen_m_all_forecasts, n_sims = 50)
+  
+  results.1 = compute_SBC(ds_m_all_forecasts.1, backend_m_all_forecasts, keep_fits = FALSE, cache_mode = "results", cache_location = file.path(cache_dir, "model-all_forecasts-1"))
+  results.2 = compute_SBC(ds_m_all_forecasts.2, backend_m_all_forecasts, keep_fits = FALSE, cache_mode = "results", cache_location = file.path(cache_dir, "model-all_forecasts-2"))
+  results.3 = compute_SBC(ds_m_all_forecasts.3, backend_m_all_forecasts, keep_fits = FALSE, cache_mode = "results", cache_location = file.path(cache_dir, "model-all_forecasts-3"))
+} else {
+  ds_m_all_forecasts.1 = readRDS("../cache/_mixture_model_SBC/ds-01.rds")
+  ds_m_all_forecasts.2 = readRDS("../cache/_mixture_model_SBC/ds-02.rds")
+  ds_m_all_forecasts.3 = readRDS("../cache/_mixture_model_SBC/ds-03.rds")
+
+  results.1 = compute_SBC(ds_m_all_forecasts.1, backend_m_all_forecasts, keep_fits = FALSE, cache_mode = "results", cache_location = file.path(cache_dir, "model-all_forecasts-1"))
+  results.2 = compute_SBC(ds_m_all_forecasts.2, backend_m_all_forecasts, keep_fits = FALSE, cache_mode = "results", cache_location = file.path(cache_dir, "model-all_forecasts-2"))
+  results.3 = compute_SBC(ds_m_all_forecasts.3, backend_m_all_forecasts, keep_fits = FALSE, cache_mode = "results", cache_location = file.path(cache_dir, "model-all_forecasts-3"))
+}
+```
+
+We provided the saved results of our SBC computations, which can be used to explore diagnostic visualisations:
+
+```{r, SBC-hist}
+results_combined <- bind_results(results.1, results.2, results.3)
+plot_rank_hist(results_combined)
+```
+
+
+```{r, SBC-ecdf}
+plot_coverage(results_combined)
+```
+
+The results suggests that our model is well calibrated.
+
+## 3. Final Model with all effects
+
+So far, we have assumed that participants in the second block will only be presented with p-boxes. However, the pertinent question for our study is the effect of representation on the optimism parameter ($\gamma$). Our final model, which is able to capture the effects of the visual representation, can be written out as:
+
+$$
+\begin{align*}
+send &\sim \textrm{Binomial}(p) \\
+\mathrm{logit}(p_\mathtt{SEND}) &= \alpha_{[r,j]} + \beta_{[r,j]} \cdot [\mathrm{logit}(\gamma_{[j]} p^+ + (1 - \gamma_{[j]}) p_-) - \mathrm{logit}(0.2)] \\
+\alpha_{[r,j]} &= \alpha_r + \alpha_{[j]} \\
+\beta_{[r,j]} &= \beta_r + \beta_{[j]} \\
+\mathrm{logit}(\gamma_{[r,j]}) &= \omega_r + \omega_{[j]} \\
+\begin{bmatrix}\alpha_{[j]} \\ \beta_{[j]} \\ \omega_{[j]} \end{bmatrix} &\sim \text{MVNormal}\left(\begin{bmatrix}0\\0\\0\end{bmatrix}, \Sigma\right) \\
+r &\in \{1...R\} \hskip3em (R \; representations) \\
+j &\in \{1...J\} \hskip3em (J \; participants)
+\end{align*}
+$$
+
+We define a function which allows us to generate hypothetical data for two different representations (one change from the previous functions here is that `n_pid` describes the number of participants in each condition, as opposed to the total number of participants): 
+
+```{r}
+generate_data.complete_forecasts_all_effects = function(.seed, design, n_pid) {
+  set.seed(.seed)
+  n = nrow(exp.design)
+  
+  a_r = c(0.2, 0.3);
+  b_r = c(2.3, 1.9);
+  gamma_r = c(-0.5, -1.5);
+  
+  sd_a = 1; sd_b = 1; sd_a_j = .5; sd_b_j = .5;
+  sd_gamma = 1; sd_gamma_j = .5;
+  
+  expand_grid(
+    id = 1:n_pid,                                                       # number of participants in each condition
+    nesting(vis = c("ensemble", "pbox"), a_r, b_r, gamma_r)
+  ) |> 
+    mutate(
+      pid = map_chr(id, ~ random_str(12)),                              # assign a unique id to each participant
+      a_bar = map_dbl(a_r, ~ rnorm(1, ., sd_a)),                        # random effect for bias for each participant
+      b_bar = map_dbl(b_r, ~ rnorm(1, ., sd_b)),                      # random effect for "degree of distortion" for each participant
+      gamma_bar = map_dbl(gamma_r, ~ rnorm(1, ., sd_gamma)),      # random effect for optimism parameter for each participant
+    ) |>
+    mutate(
+      data = list(design),
+      a_j = map(a_bar, ~ rnorm(nrow(design), .x, sd_a_j)),              # some noise
+      b_j = map(b_bar, ~ rnorm(nrow(design), .x, sd_b_j)),
+      gamma_j = map(gamma_bar, ~ gtools::inv.logit(rnorm(nrow(design), .x, sd_gamma_j)))
+    ) |>
+    unnest(c(data, a_j, b_j, gamma_j)) |>
+    mutate(
+      .upper = map_dbl(p_true, min),                             # min(p_true) corresponding to the upper bound of the p-box
+      .lower = map_dbl(p_true, max),                             # max(p_true) corresponding to the lower bound of the p-box
+      p_sub = map2_dbl(p_true, gamma_j, ~ .y * min(.x) + (1 - .y)* max(.x)), # which curve is being attended to
+      p_send = pmap_dbl(list(p_sub, a_j, b_j), ~ inv.logit(..2 + ..3*(logit(..1) - logit(0.2)))),
+      response = map_dbl(p_send, ~ rbinom(1, 1, .x))
+    )
+}
+```
+
+We can then try to fit a model to this data to see if it converges:
+
+```{r, model-single-forecast-all-effects}
+sim_data.all_effects.logit_p = generate_data.complete_forecasts_all_effects(123, exp.design, 60)
+
+sim_data.all_effects.logit_p.list = sim_data.all_effects.logit_p |> 
+  mutate(x = .upper) |> 
+  prepare_standata("pid") |> 
+  add_list_vars(
+    is_single = as.integer(sim_data.all_effects.logit_p$block == "single"),
+    M = 2,
+    K = 2,
+    X = matrix(
+      as.integer(
+        c(sim_data.all_effects.logit_p$vis == "pbox", 
+          sim_data.all_effects.logit_p$vis == "ensemble")), ncol = 2)
+  )
+
+model_logit_all_forecasts_all_effects = cmdstan_model("./stan_models/03-model-complete_forecasts-all_effects.stan")
+
+
+if (FLAG_RUN) {
+  fit_all_forecasts_all_effects = model_logit_all_forecasts_all_effects$sample(
+    data = sim_data.all_effects.logit_p.list,
+    iter_warmup = 2000, 
+    iter_sampling = 2000, 
+    chains = 4,
+    parallel_chains = 4, 
+    refresh = 400,
+    show_exceptions = FALSE
+  )
+  
+  fit_all_forecasts_all_effects = as_draws_df(fit_all_forecasts_all_effects)
+  saveRDS(fit_all_forecasts_all_effects, "../cache/_model_fits/02-simulation-fit_complete.rds")
+} else {
+  fit_all_forecasts_all_effects = readRDS("../cache/_model_fits/02-simulation-fit_complete.rds")
+}
+```
+
+From the estimates below, we see that the estimated parameter values are close enough to the actual ground truth estimates:
+
+```{r}
+draws.fit_all_forecasts_all_effects = as_draws_df(fit_all_forecasts_all_effects) |> 
+  select(-starts_with("z"), -starts_with("r"), -starts_with("L"))
+
+draws.fit_all_forecasts_all_effects |> 
+  mutate(gamma_1 = inv.logit(`b_gamma[1]`), gamma_2 = inv.logit(`b_gamma[2]`)) |> 
+  summarise_draws(mean, sd, quantile2, rhat, ess_bulk, ess_tail) |> 
+  mutate_if(is.numeric, ~ round(., 4)) 
+```

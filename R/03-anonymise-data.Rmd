@@ -1,0 +1,694 @@
+---
+title: "Prolific data anonymisation, cleaning and bonus payments"
+output: html_document
+date: "2024-08-12"
+---
+
+# Introduction
+
+This document outlines the data cleaning and anonymisation processes that we use for our data. Note that we do not share certain files such as those containing participants' Prolific IDs (which is downloaded directly from Prolific). We also modify the file containing responses that we downloaded from Qualtrics to hide participants Prolific ID.
+
+## Preliminaries
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(distributional)
+
+theme_set(theme_minimal())
+
+# function to anonymize worker ids
+anonymise <- function(x, algo="crc32"){
+  unq_hashes <- vapply(unique(x), function(object) digest::digest(object, algo=algo), FUN.VALUE="", USE.NAMES=TRUE)
+  unname(unq_hashes[x])
+}
+
+# load the following parameters from the same file:
+# ntrials, start (of mean forecast temperature), sigma, interval.width
+source("00-experiment-parameters.R")
+(T_opt = qnorm(1 - 1/5, 32, sigma))
+```
+
+
+# Study 1
+
+```{r}
+FLAG_STUDY = 1
+STUDY_PATH = paste0("../data/study-final-", FLAG_STUDY, "/")
+PROLIFIC_PATH = paste0("../data/study-final-", FLAG_STUDY, "/01-data-prolific.csv")
+QUALTRICS_PATH = paste0("../data/study-final-", FLAG_STUDY, "/02-data-qualtrics.csv")
+```
+
+
+## Participants
+
+We load the data provided by Prolific and the logs that we collect in our database. We then select participants which have completed the study (code: APPROVED)
+
+```{r}
+prolific_pids = read.csv(PROLIFIC_PATH) |> 
+  filter(Status == "APPROVED") |>
+  rename(PROLIFIC_PID = Participant.id) |> 
+  select(PROLIFIC_PID, Completion.code)
+```
+
+
+## Database response records and data cleaning
+
+We store each participants' responses in Qualtrics. We import those responses and filter them on the list of participants who have successfully completed the study. The code below transforms the dataset and removes the columns that are not relevant for the analysis.
+
+```{r load_data}
+dat_exp1 = read.csv(QUALTRICS_PATH) |> 
+  filter(row_number() > 2) |> 
+  rename(
+    duration = Duration..in.seconds.,
+    browser = meta_info_Browser,
+    version = meta_info_Version,
+    os = meta_info_Operating.System,
+    resolution = meta_info_Resolution,
+    consent = do_you_consent,
+    user_id = PROLIFIC_PID,
+    training_1 = Q16,
+    training_2 = Q20
+  ) |> 
+  filter(user_id %in% prolific_pids$PROLIFIC_PID)
+
+dat_complete_exp1 = dat_exp1 |> 
+    rename(curve_for_decision = curve.for.decision) |> 
+    select(user_id, duration, resolution, trial_index_map_single, trial_index_map_multiple, training_1, training_2, ends_with("Q6"), ends_with("Q8"), curve_for_decision, description, budget, vis)
+```
+
+We wrangle the data into a (long) format which is convenient for subsequent modeling and add columns which help us identify group-level effects. Since each participant in our pilot study participated in 30 trials, we index the trial number for each participant for each block.
+
+```{r}
+vectorise_tim = function(x) {
+  as.numeric(stringr::str_split_1(str_replace_all(x, "[\\[\\]]", ''), ","))
+}
+
+optimal_temperature = qnorm(1 - 1/5, 32, 2.08) # ~ 33.75
+
+df.responses.long_exp1 = dat_complete_exp1 |> 
+  select(-c(duration, resolution, training_1, training_2)) |> # , description, curve_for_decision)) |> 
+  # select(-c(duration, resolution, training_1, training_2, description, curve_for_decision, curve_for_decision_desc)) |> 
+  # select(-c(graph_interpretation, graph_decision, feedback, challenges)) |> 
+  pivot_longer(
+    cols = c(X1_Q6:X14_Q8),
+    names_pattern = "X([0-9]+)_Q([0-9]+)",
+    names_to = c("index", "block"),
+    values_to = "response"
+  ) |> 
+  mutate(
+    index = as.numeric(index),
+    block = ifelse(block == 6, "single", "multiple"),
+    trial_index_map_single = map(trial_index_map_single, vectorise_tim),
+    trial_index_map_multiple = map(trial_index_map_multiple, vectorise_tim),
+    trial_index_map = ifelse(block == "single", trial_index_map_single, trial_index_map_multiple)
+  ) |> 
+  filter(response != "") |> 
+  mutate(
+    trial = map2_dbl(trial_index_map, index, ~ .x[[.y]]),
+    response = ifelse(response == "No", 0, 1)
+  ) |> 
+  select(-starts_with("trial_index_map"))
+```
+
+
+## Attention checks
+
+We first check if anyone failed the attention check questions. For the purposes of payment, we do not pay people who fail two or more of the following criteria:
+
+1. fail two or more of the four attention check questions
+2. provide a straight-line response (i.e. answer yes to all questions or no to all questions)
+3. provide a response which is off by 10 points to the two training / comprehension check questions
+
+We first create distinct dataframes of the responses of participants who fail each of these criteria:
+
+```{r}
+# participants who failed the attention check
+failed_attention_check_ids = df.responses.long_exp1 |> 
+  # 101 corresponds to ~ N(64,2) ==> should NOT send; and 102corresponds to ~ N(0,2) ==> should send
+  mutate(failure = "attention", attention_failures = ifelse((trial == 101 & response == 1) | (trial == 102 & response == 0), 1, 0)) |>  
+  group_by(user_id, failure) |> 
+  summarise(n = sum(attention_failures), .groups = "keep") |> 
+  filter(n > 1)
+
+straight_line_ids = df.responses.long_exp1 |> 
+  group_by(user_id) |> 
+  filter(!(trial == 0 | trial == 101 | trial == 102)) |> 
+  summarise(n = sum(response)) |> 
+  filter(n == 30 | n == 0) |> 
+  mutate(failure = "straight_line")
+
+failed_training_ids =  dat_exp1 |> 
+  select(user_id, training_1, training_2, budget) |>  #, description) |> 
+  separate_wider_regex(starts_with("training"), c(`1` = "[0-9]+", ".*"), names_sep = "_") |> 
+  rename(training_1 = training_1_1, training_2 = training_2_1) |> 
+  mutate_at(vars(training_1, training_2), as.numeric) |> 
+  mutate(failure = "training", error_1  = abs(training_1 - 30), error_2 = abs(training_2 - 70)) |> 
+  select(-starts_with("training")) |> 
+  pivot_longer(cols = starts_with("error"), names_prefix = "error_", names_to = "training_trial") |> 
+  filter(value >= 10) |> 
+  group_by(user_id, failure) |> 
+  summarise(n = n(), .groups = "keep") |> 
+  filter(n > 1)
+
+rejected_ids = c(failed_attention_check_ids$user_id, straight_line_ids$user_id) #, failed_training_ids$user_id)
+```
+
+Next, we dig deeper in to why they failed the attention checks:
+
+```{r, fig.height=10, fig.width = 20}
+df.responses.long_exp1 |> 
+  filter(user_id %in% rejected_ids) |>
+  left_join(
+    rename(exp.design, trial = index), # in exp.design, index indicates the trial id
+    by = c("block", "trial")
+  ) |> 
+  filter(!is.na(.upper)) |> 
+  mutate(
+    mu = map2_dbl(mu, block, ~ ifelse(.y == "single", .[[1]], .[[4]])),
+    failure_training = map_chr(user_id, ~ ifelse(. %in% failed_training_ids$user_id, "training", "NA")),
+    failure_straightline = map_chr(user_id, ~ ifelse(. %in% straight_line_ids$user_id, "straightline", "NA")),
+    failure_attention = map_chr(user_id, ~ ifelse(. %in% failed_attention_check_ids$user_id, "attention", "NA")),
+    failure = pmap_chr(list(failure_training, failure_straightline, failure_attention), ~ paste(..1, ..2, ..3, sep = "_"))
+  ) |> 
+  ggplot() +
+  geom_vline(aes(xintercept = 33.75), colour = "red") +
+  geom_point(aes(x = mu, y = response, colour = failure, shape = vis), size = 3) +
+  facet_wrap( ~ interaction(block, user_id)) +
+  scale_y_continuous(breaks = c(0, 1)) +
+  labs(x = "Mean of the Forecast Temperature Distributions") +
+  theme(panel.border = element_rect(colour = "#bbbbbb", fill = NA, linewidth = 0.2), panel.spacing = unit(6, "mm"))
+```
+
+## Data Wrangling and Preparing a Clean Dataset for Analysis
+
+### Removing rejected response
+
+As stated previously, we exclude participants who fail 2/3 criteria described previously. We first identify these participants:
+
+```{r}
+rejected_ids_df = rbind(
+  failed_attention_check_ids,
+  straight_line_ids,
+  failed_training_ids
+) |> 
+  arrange(user_id) |> 
+  group_by(user_id) |> 
+  mutate(n = n()) |> 
+  filter(n > 1)
+
+unique(rejected_ids_df$user_id)
+```
+
+We then create a filtered dataset which excludes these participants:
+
+```{r}
+df.responses.long.filtered_exp1 = df.responses.long_exp1 |> 
+  filter(!(trial == 0 | user_id %in% rejected_ids_df$user_id))
+```
+
+## Anonymise the input data
+
+We use the following function to anonymisation the participants prolific IDs. This function generates a unique ID for each input value and provides a one-to-one mapping with the output. In other words the same input string will always result in the same output.
+
+```{r}
+df.responses.long.filtered_exp1 |> 
+  # mutate(user_id = anonymise(user_id)) |> # not needed anymore as the responses have already been anonymised
+  write.csv(paste0(STUDY_PATH, "anonymised-data.csv"), row.names = FALSE)
+```
+
+In addition we collected qualitative responses regarding the strategies that participants used. These are stored in a separate file:
+
+```{r}
+dat_complete_exp1 |> 
+  arrange(user_id) |> 
+  mutate(user_id = anonymise(user_id)) |>
+  filter(! (user_id %in% rejected_ids_df$user_id)) |> 
+  select(user_id, vis, budget, curve_for_decision, description) |>
+  write.csv(paste0(STUDY_PATH, "qualitative-responses.csv"), row.names = FALSE)
+```
+
+## Summary
+
+We show the breakdown of participants in each condition
+
+```{r}
+df.responses.long.filtered_exp1 |> 
+  group_by(user_id) |> 
+  filter(row_number() == 1) |> 
+  group_by(vis) |> 
+  summarise(n = n())
+```
+## Bonuses
+
+We will need to provide bonus payments to participants. Below we calculate the bonuses. We do not provide bonuses to participants who's remaining budget is below 0.
+
+```{r}
+dat_exp1 |>
+  filter(! (user_id %in% rejected_ids)) |> 
+  mutate(
+    bonus = as.integer(budget) / 1000 * 0.2,
+    bonus = ifelse(bonus >= 0, bonus, 0)
+  )  |> 
+  select(user_id, bonus) |> 
+  filter(bonus > 0) |> 
+  write.csv(paste0(STUDY_PATH, 'bonus_payments.csv'), row.names = FALSE)
+```
+
+# Study 2
+
+```{r}
+FLAG_STUDY = 2
+STUDY_PATH = paste0("../data/study-final-", FLAG_STUDY, "/")
+PROLIFIC_PATH = paste0("../data/study-final-", FLAG_STUDY, "/01-data-prolific.csv")
+QUALTRICS_PATH = paste0("../data/study-final-", FLAG_STUDY, "/02-data-qualtrics.csv")
+```
+
+## Participants
+
+We load the data provided by Prolific and the logs that we collect in our database. We then select participants which have completed the study (code: APPROVED)
+
+```{r}
+prolific_pids = read.csv(PROLIFIC_PATH) |> 
+  filter(Status == "APPROVED") |>
+  rename(PROLIFIC_PID = Participant.id) |> 
+  select(PROLIFIC_PID, Completion.code)
+```
+
+## Database response records and data cleaning
+
+We store each participants' responses in Qualtrics. We import those responses and filter them on the list of participants who have successfully completed the study. The code below transforms the dataset and removes the columns that are not relevant for the analysis.
+
+```{r load_data}
+dat_exp2 = read.csv(QUALTRICS_PATH) |> 
+  filter(row_number() > 2) |> 
+  rename(
+    duration = Duration..in.seconds.,
+    browser = meta_info_Browser,
+    version = meta_info_Version,
+    os = meta_info_Operating.System,
+    resolution = meta_info_Resolution,
+    consent = do_you_consent,
+    user_id = PROLIFIC_PID,
+    training_1 = Q16,
+    training_2 = Q20
+  ) |> 
+  filter(user_id %in% prolific_pids$PROLIFIC_PID)
+
+dat_complete_exp2 = dat_exp2 |> 
+  rename(curve_for_decision = curve.for.decision) |> 
+  select(user_id, duration, resolution, trial_index_map_single, trial_index_map_multiple, training_1, training_2, ends_with("Q6"), ends_with("Q8"), curve_for_decision, description, budget, vis)
+```
+
+We wrangle the data into a (long) format which is convenient for subsequent modeling and add columns which help us identify group-level effects. Since each participant in our pilot study participated in 30 trials, we index the trial number for each participant for each block.
+
+```{r}
+vectorise_tim = function(x) {
+  as.numeric(stringr::str_split_1(str_replace_all(x, "[\\[\\]]", ''), ","))
+}
+
+optimal_temperature = qnorm(1 - 1/5, 32, 2.08) # ~ 33.75
+
+df.responses.long_exp2 = dat_exp2 |> 
+  select(-c(duration, resolution, training_1, training_2)) |> # , description, curve_for_decision)) |> 
+  # select(-c(duration, resolution, training_1, training_2, description, curve_for_decision, curve_for_decision_desc)) |> 
+  # select(-c(graph_interpretation, graph_decision, feedback, challenges)) |> 
+  pivot_longer(
+    cols = c(X1_Q6:X14_Q8),
+    names_pattern = "X([0-9]+)_Q([0-9]+)",
+    names_to = c("index", "block"),
+    values_to = "response"
+  ) |> 
+  mutate(
+    index = as.numeric(index),
+    block = ifelse(block == 6, "single", "multiple"),
+    trial_index_map_single = map(trial_index_map_single, vectorise_tim),
+    trial_index_map_multiple = map(trial_index_map_multiple, vectorise_tim),
+    trial_index_map = ifelse(block == "single", trial_index_map_single, trial_index_map_multiple)
+  ) |> 
+  filter(response != "") |> 
+  mutate(
+    trial = map2_dbl(trial_index_map, index, ~ .x[[.y]]),
+    response = ifelse(response == "No", 0, 1)
+  ) |> 
+  select(-starts_with("trial_index_map"))
+```
+
+
+## Attention checks
+
+We first check if anyone failed the attention check questions. For the purposes of payment, we do not pay people who fail two or more of the following criteria:
+
+1. fail two or more of the four attention check questions
+2. provide a straight-line response (i.e. answer yes to all questions or no to all questions)
+3. provide a response which is off by 10 points to the two training / comprehension check questions
+
+We first create distinct dataframes of the responses of participants who fail each of these criteria:
+
+```{r}
+# participants who failed the attention check
+failed_attention_check_ids = df.responses.long_exp2 |> 
+  # 101 corresponds to ~ N(64,2) ==> should NOT send; and 102corresponds to ~ N(0,2) ==> should send
+  mutate(failure = "attention", attention_failures = ifelse((trial == 101 & response == 1) | (trial == 102 & response == 0), 1, 0)) |>  
+  group_by(user_id, failure) |> 
+  summarise(n = sum(attention_failures), .groups = "keep") |> 
+  filter(n > 1)
+
+straight_line_ids = df.responses.long_exp2 |> 
+  group_by(user_id) |> 
+  filter(!(trial == 0 | trial == 101 | trial == 102)) |> 
+  summarise(n = sum(response)) |> 
+  filter(n == 30 | n == 0) |> 
+  mutate(failure = "straight_line")
+
+failed_training_ids =  dat_exp2 |> 
+  select(user_id, training_1, training_2, budget) |>  #, description) |> 
+  separate_wider_regex(starts_with("training"), c(`1` = "[0-9]+", ".*"), names_sep = "_") |> 
+  rename(training_1 = training_1_1, training_2 = training_2_1) |> 
+  mutate_at(vars(training_1, training_2), as.numeric) |> 
+  mutate(failure = "training", error_1  = abs(training_1 - 30), error_2 = abs(training_2 - 70)) |> 
+  select(-starts_with("training")) |> 
+  pivot_longer(cols = starts_with("error"), names_prefix = "error_", names_to = "training_trial") |> 
+  filter(value >= 10) |> 
+  group_by(user_id, failure) |> 
+  summarise(n = n(), .groups = "keep") |> 
+  filter(n > 1)
+
+rejected_ids = c(failed_attention_check_ids$user_id, straight_line_ids$user_id) #, failed_training_ids$user_id)
+```
+
+Next, we dig deeper in to why they failed the attention checks:
+
+```{r, fig.height=10, fig.width = 20}
+df.responses.long_exp2 |> 
+  filter(user_id %in% rejected_ids) |>
+  left_join(
+    rename(exp.design, trial = index), # in exp.design, index indicates the trial id
+    by = c("block", "trial")
+  ) |> 
+  filter(!is.na(.upper)) |> 
+  mutate(
+    mu = map2_dbl(mu, block, ~ ifelse(.y == "single", .[[1]], .[[4]])),
+    failure_training = map_chr(user_id, ~ ifelse(. %in% failed_training_ids$user_id, "training", "NA")),
+    failure_straightline = map_chr(user_id, ~ ifelse(. %in% straight_line_ids$user_id, "straightline", "NA")),
+    failure_attention = map_chr(user_id, ~ ifelse(. %in% failed_attention_check_ids$user_id, "attention", "NA")),
+    failure = pmap_chr(list(failure_training, failure_straightline, failure_attention), ~ paste(..1, ..2, ..3, sep = "_"))
+  ) |> 
+  ggplot() +
+  geom_vline(aes(xintercept = 33.75), colour = "red") +
+  geom_point(aes(x = mu, y = response, colour = failure, shape = vis), size = 3) +
+  facet_wrap( ~ interaction(block, user_id)) +
+  scale_y_continuous(breaks = c(0, 1)) +
+  labs(x = "Mean of the Forecast Temperature Distributions") +
+  theme(panel.border = element_rect(colour = "#bbbbbb", fill = NA, linewidth = 0.2), panel.spacing = unit(6, "mm"))
+```
+
+## Data Wrangling and Preparing a Clean Dataset for Analysis
+
+### Removing rejected response
+
+As stated previously, we exclude participants who fail 2/3 criteria described previously. We first identify these participants:
+
+```{r}
+rejected_ids_df = rbind(
+  failed_attention_check_ids,
+  straight_line_ids,
+  failed_training_ids
+) |> 
+  arrange(user_id) |> 
+  group_by(user_id) |> 
+  mutate(n = n()) |> 
+  filter(n > 1)
+
+unique(rejected_ids_df$user_id)
+```
+
+We then create a filtered dataset which excludes these participants:
+
+```{r}
+df.responses.long.filtered_exp2 = df.responses.long_exp2 |> 
+  filter(!(trial == 0 | user_id %in% rejected_ids_df$user_id))
+```
+
+## Anonymise the input data
+
+We use the following function to anonymisation the participants prolific IDs. This function generates a unique ID for each input value and provides a one-to-one mapping with the output. In other words the same input string will always result in the same output.
+
+```{r}
+df.responses.long.filtered_exp2 |> 
+  # mutate(user_id = anonymise(user_id)) |> # not needed anymore as the responses have already been anonymised
+  write.csv(paste0(STUDY_PATH, "anonymised-data.csv"), row.names = FALSE)
+```
+
+In addition we collected qualitative responses regarding the strategies that participants used. These are stored in a separate file:
+
+```{r}
+dat_complete_exp2 |> 
+  arrange(user_id) |> 
+  mutate(user_id = anonymise(user_id)) |>
+  filter(! (user_id %in% rejected_ids_df$user_id)) |> 
+  select(user_id, vis, budget, curve_for_decision, description) |>
+  write.csv(paste0(STUDY_PATH, "qualitative-responses.csv"), row.names = FALSE)
+```
+
+## Summary
+
+We show the breakdown of participants in each condition
+
+```{r}
+df.responses.long.filtered_exp2 |> 
+  group_by(user_id) |> 
+  filter(row_number() == 1) |> 
+  group_by(vis) |> 
+  summarise(n = n())
+```
+
+## Bonuses
+
+We will need to provide bonus payments to participants. Below we calculate the bonuses. We do not provide bonuses to participants who's remaining budget is below 0.
+
+```{r}
+dat_exp2 |>
+  filter(! (user_id %in% rejected_ids)) |> 
+  mutate(
+    bonus = as.integer(budget) / 1000 * 0.2,
+    bonus = ifelse(bonus >= 0, bonus, 0)
+  )  |> 
+  select(user_id, bonus) |> 
+  filter(bonus > 0) |> 
+  write.csv(paste0(STUDY_PATH, 'bonus_payments.csv'), row.names = FALSE)
+```
+
+# Study 3
+
+```{r}
+FLAG_STUDY = 3
+STUDY_PATH = paste0("../data/study-final-", FLAG_STUDY, "/")
+PROLIFIC_PATH = paste0("../data/study-final-", FLAG_STUDY, "/01-data-prolific.csv")
+QUALTRICS_PATH = paste0("../data/study-final-", FLAG_STUDY, "/02-data-qualtrics.csv")
+```
+
+## Participants
+
+We load the data provided by Prolific and the logs that we collect in our database. We then select participants which have completed the study (code: APPROVED)
+
+```{r}
+prolific_pids = read.csv(PROLIFIC_PATH) |> 
+  filter(Status == "APPROVED") |>
+  rename(PROLIFIC_PID = Participant.id) |> 
+  select(PROLIFIC_PID, Completion.code)
+```
+
+## Database response records and data cleaning
+
+We store each participants' responses in Qualtrics. We import those responses and filter them on the list of participants who have successfully completed the study. The code below transforms the dataset and removes the columns that are not relevant for the analysis.
+
+```{r load_data}
+dat_exp3 = read.csv(QUALTRICS_PATH) |> 
+  filter(row_number() > 2) |> 
+  rename(
+    duration = Duration..in.seconds.,
+    browser = meta_info_Browser,
+    version = meta_info_Version,
+    os = meta_info_Operating.System,
+    resolution = meta_info_Resolution,
+    consent = do_you_consent,
+    user_id = PROLIFIC_PID,
+    training_1 = Q16,
+    training_2 = Q20
+  ) |> 
+  filter(user_id %in% prolific_pids$PROLIFIC_PID)
+
+dat_complete_exp3 = dat_exp3 |> 
+  select(user_id, duration, resolution, trial_index_map_single, trial_index_map_multiple, training_1, training_2, ends_with("Q6"), ends_with("Q8"), phrasing, budget, vis)
+```
+
+We wrangle the data into a (long) format which is convenient for subsequent modeling and add columns which help us identify group-level effects. Since each participant in our pilot study participated in 30 trials, we index the trial number for each participant for each block.
+
+```{r}
+vectorise_tim = function(x) {
+  as.numeric(stringr::str_split_1(str_replace_all(x, "[\\[\\]]", ''), ","))
+}
+
+optimal_temperature = qnorm(1 - 1/5, 32, 2.08) # ~ 33.75
+
+df.responses.long_exp3 = dat_exp3 |> 
+  select(-c(duration, resolution, training_1, training_2)) |> # , description, curve_for_decision)) |> 
+  # select(-c(duration, resolution, training_1, training_2, description, curve_for_decision, curve_for_decision_desc)) |> 
+  # select(-c(graph_interpretation, graph_decision, feedback, challenges)) |> 
+  pivot_longer(
+    cols = c(X1_Q6:X14_Q8),
+    names_pattern = "X([0-9]+)_Q([0-9]+)",
+    names_to = c("index", "block"),
+    values_to = "response"
+  ) |> 
+  mutate(
+    index = as.numeric(index),
+    block = ifelse(block == 6, "single", "multiple"),
+    trial_index_map_single = map(trial_index_map_single, vectorise_tim),
+    trial_index_map_multiple = map(trial_index_map_multiple, vectorise_tim),
+    trial_index_map = ifelse(block == "single", trial_index_map_single, trial_index_map_multiple)
+  ) |> 
+  filter(response != "") |> 
+  mutate(
+    trial = map2_dbl(trial_index_map, index, ~ .x[[.y]]),
+    response = ifelse(response == "No", 0, 1)
+  ) |> 
+  select(-starts_with("trial_index_map"))
+```
+
+
+## Attention checks
+
+We first check if anyone failed the attention check questions. For the purposes of payment, we do not pay people who fail two or more of the following criteria:
+
+1. fail two or more of the four attention check questions
+2. provide a straight-line response (i.e. answer yes to all questions or no to all questions)
+3. provide a response which is off by 10 points to the two training / comprehension check questions
+
+We first create distinct dataframes of the responses of participants who fail each of these criteria:
+
+```{r}
+# participants who failed the attention check
+failed_attention_check_ids = df.responses.long_exp3 |> 
+  # 101 corresponds to ~ N(64,2) ==> should NOT send; and 102corresponds to ~ N(0,2) ==> should send
+  mutate(failure = "attention", attention_failures = ifelse((trial == 101 & response == 1) | (trial == 102 & response == 0), 1, 0)) |>  
+  group_by(user_id, failure) |> 
+  summarise(n = sum(attention_failures), .groups = "keep") |> 
+  filter(n > 1)
+
+straight_line_ids = df.responses.long_exp3 |> 
+  group_by(user_id) |> 
+  filter(!(trial == 0 | trial == 101 | trial == 102)) |> 
+  summarise(n = sum(response)) |> 
+  filter(n == 30 | n == 0) |> 
+  mutate(failure = "straight_line")
+
+failed_training_ids =  dat_exp3 |> 
+  select(user_id, training_1, training_2, budget) |>  #, description) |> 
+  separate_wider_regex(starts_with("training"), c(`1` = "[0-9]+", ".*"), names_sep = "_") |> 
+  rename(training_1 = training_1_1, training_2 = training_2_1) |> 
+  mutate_at(vars(training_1, training_2), as.numeric) |> 
+  mutate(failure = "training", error_1  = abs(training_1 - 30), error_2 = abs(training_2 - 70)) |> 
+  select(-starts_with("training")) |> 
+  pivot_longer(cols = starts_with("error"), names_prefix = "error_", names_to = "training_trial") |> 
+  filter(value >= 10) |> 
+  group_by(user_id, failure) |> 
+  summarise(n = n(), .groups = "keep") |> 
+  filter(n > 1)
+
+rejected_ids = c(failed_attention_check_ids$user_id, straight_line_ids$user_id) #, failed_training_ids$user_id)
+```
+
+Next, we dig deeper in to why they failed the attention checks:
+
+```{r, fig.height=10, fig.width = 20}
+df.responses.long_exp3 |> 
+  filter(user_id %in% rejected_ids) |>
+  left_join(
+    rename(exp.design, trial = index), # in exp.design, index indicates the trial id
+    by = c("block", "trial")
+  ) |> 
+  filter(!is.na(.upper)) |> 
+  mutate(
+    mu = map2_dbl(mu, block, ~ ifelse(.y == "single", .[[1]], .[[4]])),
+    failure_training = map_chr(user_id, ~ ifelse(. %in% failed_training_ids$user_id, "training", "NA")),
+    failure_straightline = map_chr(user_id, ~ ifelse(. %in% straight_line_ids$user_id, "straightline", "NA")),
+    failure_attention = map_chr(user_id, ~ ifelse(. %in% failed_attention_check_ids$user_id, "attention", "NA")),
+    failure = pmap_chr(list(failure_training, failure_straightline, failure_attention), ~ paste(..1, ..2, ..3, sep = "_"))
+  ) |> 
+  ggplot() +
+  geom_vline(aes(xintercept = 33.75), colour = "red") +
+  geom_point(aes(x = mu, y = response, colour = failure, shape = vis), size = 3) +
+  facet_wrap( ~ interaction(block, user_id)) +
+  scale_y_continuous(breaks = c(0, 1)) +
+  labs(x = "Mean of the Forecast Temperature Distributions") +
+  theme(panel.border = element_rect(colour = "#bbbbbb", fill = NA, linewidth = 0.2), panel.spacing = unit(6, "mm"))
+```
+
+## Data Wrangling and Preparing a Clean Dataset for Analysis
+
+### Removing rejected response
+
+As stated previously, we exclude participants who fail 2/3 criteria described previously. We first identify these participants:
+
+```{r}
+rejected_ids_df = rbind(
+  failed_attention_check_ids,
+  straight_line_ids,
+  failed_training_ids
+) |> 
+  arrange(user_id) |> 
+  group_by(user_id) |> 
+  mutate(n = n()) |> 
+  filter(n > 1)
+
+unique(rejected_ids_df$user_id)
+```
+
+We then create a filtered dataset which excludes these participants:
+
+```{r}
+df.responses.long.filtered_exp3 = df.responses.long_exp3 |> 
+  filter(!(trial == 0 | user_id %in% rejected_ids_df$user_id))
+```
+
+## Anonymise the input data
+
+We use the following function to anonymisation the participants prolific IDs. This function generates a unique ID for each input value and provides a one-to-one mapping with the output. In other words the same input string will always result in the same output.
+
+```{r}
+df.responses.long.filtered_exp3 |> 
+  # mutate(user_id = anonymise(user_id)) |> # not needed anymore as the responses have already been anonymised
+  write.csv(paste0(STUDY_PATH, "anonymised-data.csv"), row.names = FALSE)
+```
+
+We did not collect qualitative responses in Study 3
+
+## Summary
+
+We show the breakdown of participants in each condition (which is `phrasing` and not `vis` like the previous experiments)
+
+```{r}
+df.responses.long.filtered_exp3 |> 
+  group_by(user_id) |> 
+  filter(row_number() == 1) |> 
+  group_by(phrasing) |> 
+  summarise(n = n())
+```
+
+## Bonuses
+
+We will need to provide bonus payments to participants. Below we calculate the bonuses. We do not provide bonuses to participants who's remaining budget is below 0.
+
+```{r}
+dat_exp3 |>
+  filter(! (user_id %in% rejected_ids)) |> 
+  mutate(
+    bonus = as.integer(budget) / 1000 * 0.2,
+    bonus = ifelse(bonus >= 0, bonus, 0)
+  )  |> 
+  select(user_id, bonus) |> 
+  filter(bonus > 0) |> 
+  write.csv(paste0(STUDY_PATH, 'bonus_payments.csv'), row.names = FALSE)
+```
+
