@@ -1,0 +1,193 @@
+"user_id","vis","budget","curve_for_decision","description"
+"1e98f5d1","ensembles_left","2000","B","Median chance of 32 is 40% or greater, send blankets."
+"2d1ec637","ensembles_right","2000","Some forecast between B and C","If below 50%, I do not give blankets. If close to or above 50% I give blankets"
+"7d1ef9ea","ensembles_right","3000","B","I decided to send blankets If forecast B tended to be on the higher side of ~15% with consideration for forecast A."
+"6bb8a7be","ensembles_right","6000","B","I considered where the majority of the lines were. In the example above, most were around 20% so I would not send blankets. If the majority were around 40-50%, I would consider the outlier forecasts to make my final decision."
+"4e741919","ensembles_right","11000","Other (please describe)","I mainly used the middle, but if A was extremley low I considered it more."
+"cba7cdda","ensembles_right","3000","B","If the forecast was consistent among the majority I assumed that was the most likely probability especially if A didn't deviate a lot from B and C. I did take A into consideration if it seemed like it showed a real risk of low temperatures and decided to send the blankets based on A"
+"f7af0862","ensembles_right","-3000","Some forecast between B and C","I figured if there was below 50% chance of freezing, I wouldn't send blankets"
+"2ac9764e","ensembles_left","7000","A","I simply tried to judge general consensus and use that as risk assessment. If I believed there was a low probability (say, under 30%) I would not even consider spending the money for the blankets. Anything above 30% I started considering it."
+"597725f6","ensembles_left","5000","B","i it generally looked at more than 30 % I would send them"
+"513f1717","ensembles_left","1000","A","I would figure out, based on mostly forecast A but also the average among the forecasts, whether the change of the temperature dropping below 32 was high enough to warrant sending the blankets."
+"e496c68a","ensembles_left","6000","B","I generally tried to guess the median range on the chart."
+"fa42d914","ensembles_left","2000","Other (please describe)","I sent blankets whenever the chances were over 50%, or the majority of forecasts was over 50%."
+"9d1b5ed2","ensembles_right","-5000","Some forecast between B and C","I just decided if the bulk of the forecasts were 30 percent or lower I would not send blankets "
+"28a0fba7","ensembles_left","-8000","Some forecast between B and C","I decided to send blankets if the lines were below or close to 32. I decided not to send blankets if the line was well above 32. "
+"b1d8b061","ensembles_left","10000","Some forecast between B and C","try to average them "
+"01ac082e","ensembles_left","11000","B","If the forecasts grouped together shows that there was a 50% chance or more of the forecast being below 32 degrees I decided to send blankets to be on the safe side."
+"21f12dbd","ensembles_left","11000","Other (please describe)","I would send blankets if the prediction was 40% or higher, and I would not send the blankets if it was below 40%"
+"3d8b0e48","ensembles_right","10000","B","My decision to send blankets was determined by the average chance that the temperature would drop below 32 degrees. If the cumulative chance was on average greater than 30%, I would send blankets, and not send any if it was lower. I chose a lower percentage as the threshold as I felt it was better to send blankets when not needed, than to fail to send them when they are needed."
+"6449070e","ensembles_right","7000","Some forecast between B and C","I sent blankets whenever the probability of cold was around 50%. "
+"8a007816","ensembles_right","-4000","Some forecast between B and C","To send is better than not to send. Gamblers call it a 50/50 shot in the dark if you are not in total control of the bet. 
+I bet I got half of them wrong. I just went by the curves in the lines. 
+I am not a weatherman. 
+ The graph is very close and hard to judge. "
+"8708d83f","ensembles_left","12000","B","A and C appear to be outliers in this instance, so I do not use them as much to make my decision. I tend to want to send blankets for sure if there is a 40% chance or greater that the temperature will be lower than 32 and if I have resources, will do so at a 30% chance or greater."
+"ed454819","ensembles_left","10000","Other (please describe)","If using the graph above, I would choose not to send blankets since the probability the temperature falls below 32F is fairly low (20% or less, give or take) according to a large majority of the forecasts presented. For the task, I relied on this majority group of forecasts that were clumped fairly closely together because I did not think the outlier (Forecast C) was more reliable than the rest."
+"8180bfe3","ensembles_right","0","C","I went with the majority and if it appeared that there was a 30% chance or more I would send blankets"
+"7e1fc3c8","ensembles_left","4000","B","I would look at the extremes of the all the forecasts and then compare it to the remaining forecasts. If the averages of forecast was 30% or higher, I would send blankets."
+"7da03731","ensembles_right","4000","Some forecast between B and C","If the temperature was forecast to have a 20-30% or higher chance to be below 32 degrees I would issue blankets. Anything below 20% I thought it was worth the risk of not issuing blankets and saving money."
+"45a234d3","ensembles_right","9000","Other (please describe)"," I would have felt really guilty if A was correct and I went with the consensus of B and C, so sometimes, to be safe, I went more with A, and other times more with B. I would sort of rather waste money to be safe than to have Peruvian farmers lose alpaca because of my decisions."
+"baef876c","ensembles_left","5000","B","Using just intuition, decided on the amount of blankets based on how many alpacas it seemed were to be affected. "
+"e580a957","ensembles_left","6000","Other (please describe)","If the majority of the models showed a close to or greater than 50% possibility of temperature dropping below 32 degrees (and there was only one dissenting model) then I would send blankets."
+"f2465d4e","ensembles_right","2000","C","I look at the probability of all of them and see what the average was. If it looked pretty high, I would send blankets. Otherwise, I'd play it safe."
+"56dd07bb","ensembles_left","-4000","Other (please describe)","I tried to do a quick average for the percentage that it would be 32 degrees or less. If it was above a 30 percent average, I would send the blankets. If the average was less than that, I would not send blankets. "
+"fa970b72","ensembles_left","1000","B","There's a 15 to 30% chance then temps drop to 32 or lower so i would send blankets."
+"06ae3a1a","ensembles_left","11000","A","If there was a high chance of the temperature being low from any of the forecasts I said yes just to be safe."
+"ae20e65c","ensembles_right","10000","Some forecast between B and C","I disregarded A because it seemed to be an outliner. I mainly focused on C and B because they had the highest concentration of the lines. I would send blankets if the possibility of 32 or lower was high collectively. "
+"f92e4baa","ensembles_right","6000","Some forecast between B and C","I determined that the closer the weather was going to stay under 40 degrees for at least two forecasts, the more likely I was to purchase blankets. However, if the weather only progressed upwards through a high number of climates, I was less inclined to purchase them."
+"7aa671c9","ensembles_left","10000","B","I decided upon what I felt was the average of all data, then how likely along that average that the temperature would fall below 32F.  If it was roughly 30% or more, I felt the risk was necessary to send blankets."
+"e8009cb1","ensembles_left","11000","Other (please describe)","Previous box explains my reasoning. Just used it to fixing the upper and lower bound estimate."
+"e0642adb","ensembles_left","-3000","Some forecast between B and C","I would send blankets if the majority of forecasts predicted 30% or more chance of it being cold"
+"e05a1d91","ensembles_right","5000","Some forecast between B and C","I looked at the temperature and then the percentage/probability that the temperature would fall below that. If it was quite high, I would send blankets, if not then I would not send blankets."
+"ba77f5df","ensembles_right","10000","Some forecast between B and C","I used the cluster between B and C to determine if I thought blankets needed to be delivered. I thought that forecast A was an outlier and therefore unreliable considering every other forecast had a similar projection."
+"5746e480","ensembles_left","4000","B","If it seemed like there was more than a 20% that the majority of the graphs were showing, I would send the blankets because I really really didn't want the alpacas to be cold. "
+"7b025298","ensembles_left","9000","B",""
+"5cc16d9d","ensembles_left","11000","Other (please describe)","My decision to send blankets depended on the probability that the temperature would be at or below 32 degrees. If it was 40% or higher, I sent blankets. If it was below 40%, I did not. "
+"85b6819c","ensembles_left","5000","B","If the average chance percentage was above 15% then I opted to send blankets"
+"4270315f","ensembles_left","7000","Other (please describe)","I looked at the lowest forecast, the middle forecast and the highest forecast and decided to play it safe."
+"bdb2ada9","ensembles_right","1000","Some forecast between B and C","I use the thickest slime and to see where the ex and Y values are and from that average I would make my guess on whether to send blankets or not"
+"e93969e8","ensembles_right","11000","Some forecast between B and C","I would only send blankets if it was close to a 50 percent chance of it being below 32"
+"a8d04c1d","ensembles_left","-5000","B","I used the B part of the graph then looked at the outlying line to be more conservative with my choice. It was quicker making choices without the constraints of worrying about a budget and my tendency was to want to send if the was a greater than 30% probability of it being bellow 32. "
+"87a3b778","ensembles_left","3000","Other (please describe)","Looking at the rate that they may actually drop and not wanting any bad things to happen over a blanket, so I needed to take precaution."
+"4bd86210","ensembles_left","10000","Some forecast between B and C","Anything greater than ~5% probability really makes me consider sending blankets. Anything greater than 20% and I absolutely want to send blankets because I value life and suffering of animals over money. Seems like the right thing to do if there is any real (>5%) chance of freezing temperatures."
+"844bd2dd","ensembles_left","6000","A","I looked closely at the prediction during each trial and used what they gave me to complete the task. If the graph showed anywhere higher than 55%-ish then I decided to send blankets just to be safe."
+"c26b1330","ensembles_left","-12000","Other (please describe)","I totally ignored C this time as I did so poorly in the last Section. I felt A&B had more strength against C alone. Save the alpacas! "
+"16237c58","ensembles_left","1000","Other (please describe)","I tried to see the maximum % chance and compared that to the majority groups prediction"
+"315fe32e","ensembles_left","-3000","Other (please describe)","I took a look at the majority cluster and if I felt most of the probabilities hovered more than 45% (eye-balling) I would choose to send them, as that is my level of risk tolerance. "
+"89be8f3e","ensembles_right","5000","Some forecast between B and C","if the percentage was above 30 i sent blankets just to be safe with the multiple forecast graphs i basically ignored the 1 outlier agency and also sent blankets if the chance of the temp being below 32 was 30% or above"
+"0b82c2ee","ensembles_right","0","A","I make my decision too see the temperature and   send blankets for cold weather. "
+"3ad5fc49","ensembles_right","9000","B","B mostly influenced my decision to be on the side of majority yet still cautious"
+"61e77390","ensembles_right","12000","Some forecast between B and C","I used the group of forecast rather than the outlier. "
+"63ada4ba","ensembles_left","0","A","If any of the lines suggested it would be below 32 degrees then I chose to send blankets. If the chance was 20% or less it was a harder choice."
+"8b70da86","ensembles_right","3000","C","C felt like the safest bet because it seemed more like an average rather than one suggestion."
+"c6c48b9e","ensembles_right","5000","A","If there's at least one agency that suggest that there needs to be a need for blankets I would send. If all agencies suggest otherwise I wouldn't send."
+"b2f86633","ensembles_right","-6000","C","Using C I tried to determine if the temperature fell below the 32 degrees mark. I sometimes got a little confused and had to look at the directions several times to try to make sure I was giving my best answers."
+"31bbdd51","ensembles_right","-1000","B","I primary focused on the average or forecast B. But I tried to keep A in mind in order to play it safe. It was just a balancing act of protecting the lamas and spending the least amount of money. "
+"484ba310","ensembles_right","11000","Some forecast between B and C","See what the probability is that it will be below freezing. If it is below like 15% do not. sent blankets."
+"90bf3c94","ensembles_left","8000","B","If the forecast tended to bundle together at a chance of around 0-40 percent I decided not to send blankets, similarly from 60-100 percent I sent blankets, and if was around the 50 percent mark I decided not to risk it and sent blankets anyways, I ignored the forecast outliers"
+"80b3348c","ensembles_right","9000","Other (please describe)","I sent blankets if the majority of the forecasts showed a ""decent"" chance of it going below freezing. I didn't have a specific number/value in mind when considering what counted as a ""decent chance"", I mostly went by my gut feeling"
+"762676cb","ensembles_right","12000","B","I sent blankets if the average of all the forecasts appeared to be above 50%"
+"f01dd39c","ensembles_right","7000","Other (please describe)","i just tried to average them all out"
+"a80235a3","ensembles_left","-2000","B","the strategy i used was looking at the graph closely and determining the point at which it reaches 50% above. I think it was that and seeing above 50% being a good probability to determine off of."
+"6763f6f3","ensembles_right","3000","Some forecast between B and C","i didn't send blanket unless there was at least 70% probability the temp would be below 32"
+"1d0aec51","ensembles_left","1000","Other (please describe)","if the temp had the slightes chance of reaching 32 i gave blankets"
+"1db371a8","ensembles_left","7000","B","if the probably was above 40%, i would send blankets. I used the lines grouped together instead of the outlier. "
+"51128a29","ensembles_right","8000","Some forecast between B and C","I looked at all lines and then I would see the overall lines and go with mainly ones together."
+"68df7436","ensembles_right","0","Some forecast between B and C","Some of the areas seemed clear that it would not be below 32 degrees but some would be higher so I would just try to figure out the probability. It is also less costly to just send a blanket for $1000 than to lose $5000 thinking that I was right."
+"09293506","ensembles_right","8000","Some forecast between B and C","If the majority of the forecasters are not predicting temps below 32, I felt comfortable not sending blankets even if there was an outlier. "
+"44b77655","ensembles_right","11000","Some forecast between B and C","I was ignoring all outliers, and focusing on B and C. If it was above 30%, I was likely to send out the blankets. I feel as if 5,000(.3) >1000. Trying to get a formula under there."
+"3697e012","ensembles_right","2000","Some forecast between B and C","I started off trying to send blankets if there was more than a 30% chance, then after some times where my budget was running low because I didn't send blankets when I should have, I think I started wanting to send blankets more often just to hedge my bets"
+"3859b67c","ensembles_right","10000","Other (please describe)","I would look at the main group and then look at A to make sure that was also reasonably sure the alpacas would be safe. I probably erred on the side of caution but I really didn't want any alpacas to die."
+"1b3c33c8","ensembles_right","-1000","C","looked as if the temp would drop"
+"bc46d3c1","ensembles_right","10000","A","I decided to send blankets based on the line that intersected the highest probability point. If the line intersected anything over 30%, then I sent blankets. If the highest probability point was below 30%, I did not send blankets."
+"ec2b3180","ensembles_left","11000","Other (please describe)","My strategy was to send blankets if a majority of the forecasts predicted weather at 32 degrees and under had a probability of roughly 40% or higher. I did not send blankets if this wasn't the case."
+"12ce76a6","ensembles_left","-2000","C","I tried to see the likelihood of the weather going to 32 based on the line c"
+"2c724026","ensembles_left","13000","Other (please describe)","No I would not send blankets> the probability of it going under 32 degrees in low.  "
+"2636648b","ensembles_left","4000","Other (please describe)","In this case I would say yes.  Breakeven is at a 20% chance of 32 degrees.  The majority of projections are showing a greater than 20% chance of the temperature being below 32 degrees, so it make sense to send blankets.  "
+"9530b9f3","ensembles_left","6000","B","As a rule of thumb, I chose to send blankets whenever the likelihood of freezing temperatures exceeded 15%. Had my budget been more limited, I might have chosen a higher threshold, to ensure that blankets were available on nights for which it was more certain to be freezing.  When multiple weather agencies were included, I tried to estimate a ""median"" curve, so as not to over- or under-value the outlier agency, if one existed."
+"a3408cfc","ensembles_left","6000","A","I was generally looking at B as most of the graphs overlapped there. I took C into consideration but was skeptical why C's prediction was such an outlier compared to B. For this specific graph, I was looking at A for worst case scenario there was a 30% probability that it would be too cold and that is a low probability to me. "
+"03175398","ensembles_left","9000","C","If it's less than 10% than I would NOT send blankets"
+"8281fdf7","ensembles_right","7000","A","I look at the A and see how long the temperature is. "
+"d8594829","ensembles_right","6000","Some forecast between B and C","I just used my natural ability to detect patterns and tried to see where there was more confidence in the probability of the temperature being 32 or below."
+"7d2404de","ensembles_left","6000","B","if it looks like the probability of needing them is substantial in anyway i would send blankets "
+"2c134d33","ensembles_left","1000","Some forecast between B and C","I would first look at the number 32 and see what was the highest point for the percentage that it was. Then I would look at the rest of the graph and see how the lines moved for the temperatures increasing. I did my best to determine if I thought it was a low enough chance that blankets wouldn't be needed. So if I thought there was only a very small chance I wouldn't send the blankets."
+"da0c9812","ensembles_right","6000","B","If the probability was less than 40%, I wouldn't send blankets. If It was about 40%, I would consider line A and take the chance and send blankets. If it was above 50%, I would send blankets. "
+"edb7145f","ensembles_left","4000","B","I used anything over about 33% as a reasonable threshold.  Noticing the trends on the first study that temps were within about a +/- 5 degress of the forecast.  It was educated guesswork"
+"819fa921","ensembles_right","-4000","Some forecast between B and C","I took a somewhat aggressive strategy for marginal cases where it was close but less likely. This approach was similar the approach I took last time and it was clearly not effective."
+"486b6bc9","ensembles_right","-5000","C","Interpretation Strategy
+Identify Temperature Threshold:
+
+Locate the 32°F mark on the X-axis. This is your critical temperature for alpacas needing blankets.
+Analyze Forecasts:
+
+Look at the area under each curve or bar to see how much probability is assigned to temperatures below 32°F.
+Calculate Average Probability:
+
+Estimate Area: Approximate the total area under the curves to the left of 32°F.
+Aggregate Data: Sum the probabilities provided by each agency for temperatures below 32°F.
+Compute Average: Divide this total by the number of agencies (20) to get the average probability.
+Assess Variability:
+
+Check if there is a wide range of probabilities. If most agencies forecast a high probability of temperatures below 32°F, this increases your confidence in the risk.
+Decision Making:
+
+If the average probability is high (e.g., over 50%): Issue blankets to mitigate the risk of the $5,000 penalty.
+If the average probability is low (e.g., below 50%): Consider not issuing blankets to conserve budget, but be aware of the risk of the penalty.
+Example Calculation
+Let’s say the graph shows the following probabilities from 5 out of 20 agencies for temperatures below 32°F:
+
+Agency 1: 60%
+Agency 2: 45%
+Agency 3: 55%
+Agency 4: 70%
+Agency 5: 40%
+Steps:
+
+Sum Probabilities: 60% + 45% + 55% + 70% + 40% = 270%
+Average Probability: 270% / 5 agencies = 54%
+Decision Based on Example:
+
+Probability is 54%: Since this is above 50%, you might decide to issue blankets to avoid the higher penalty.
+This approach ensures that your decision is based on aggregated data from multiple reliable sources, helping to manage risks effectively and within budget constraints.
+
+i will send blankets because i wants to prevent larger consequences 
+
+
+"
+"12a583a1","ensembles_right","12000","Some forecast between B and C","No because the majority of the forecast lines show between 20-35% that the temp will be below 32"
+"76c611da","ensembles_right","-1000","B","If the chances of the temp dropping were greater than 20 percent I issued blankets."
+"ab32fdcd","ensembles_left","10000","B","B since the cluster of forecasts are most likely more accurate then the outliers"
+"70a0ba47","ensembles_right","3000","Some forecast between B and C","My strategy was to take into consideration the average forecasts to determine how likely I thought it would be that the temperature would drop below 32 degrees. If the temperature was below 50% I would not send the blankets. If the temperature would have a 50% chance or higher I would send blankets."
+"de52a523","ensembles_right","10000","Some forecast between B and C","I would send blankets because the overwhelming probability of the temperature staying above 32 degrees F. "
+"395cf34c","ensembles_right","10000","Some forecast between B and C","From the graph I see variable data from different source First I see what's the probability and deceide with the majority sources."
+"d7451a2f","ensembles_right","8000","Some forecast between B and C","I would look at where the bulk of the trend lines were at and make my decision based on the median location of the all of the trend lines that were close together. Outliers were not seriously considered. Since the bulk of the trend lines were sitting at about a 35% of it being 32 degrees I would choose to send blankets. "
+"4ee34765","ensembles_left","10000","B","if most of the forecasts prerdict around the same thing"
+"acfe15f7","ensembles_right","11000","Some forecast between B and C","In the previous trials it seemed that the temperature was somewhere closer to the 50% mark of the straight part of the curve. So, I didn't send the blankets when the probability to be below 32 degrees was below 40%. "
+"7c9db564","ensembles_right","5000","Some forecast between B and C","I typically disregarded the outlier, and typically chose not send blankets if the majority of the forecasts indicated a low probability of being less than 32°."
+"a0aaaa15","ensembles_left","2000","A","I always chose the most conservative and safe choice. So if the percentage of likelihood that the temp fell below 32 was about 40% or higher, then I would send it. I would also accept the source of information that was most conservative even though money could possibly be saved by taking a risk and analyzing the total average responses. "
+"670e9bcd","ensembles_left","9000","B","Averages and ballparked the probabilities"
+"2d7cd9e0","ensembles_right","8000","Some forecast between B and C","Generally, if there was a greater than 20% chance of temperatures dropping below 32 I sent blankets. I modeled my decision primarily on forecasts B and C, and did not consider forecast A much unless all forecasts aligned."
+"9514ff8d","ensembles_left","6000","B","i chose to look at all the forecasts and decide the average between them and rely on that"
+"24e1f574","ensembles_left","2000","B","I followed what the majority of weather stations believed the temperature would be. In my opinion if there was a scenario that was harder to choose, it's worth it to send blankets just in case rather than to lose 5,000 dollars of the budget.  "
+"de0e3fb9","ensembles_right","3000","Other (please describe)","First I look at the accumulative Temperatures in Fahrenheit. Then, I look at the probability of it dropping of the temperature dropping below 32 degrees. If most or all graphs didn't drop below 32 degrees, I wouldn't send any blankets. If there was even one that dropped below 32 degrees I would send blankets."
+"974812bc","ensembles_left","3000","C","if the probability the temp would be <32 looked to exceed 15% i always sent the blankets, if it was 10% chance or less of being <32 degrees, i usually opted not to send the blankets"
+"b03112be","ensembles_right","6000","Some forecast between B and C","I would look at the average of all the forecasts around 32F and if it were above 50% I would send blankets."
+"dbc75e97","ensembles_left","-14000","Some forecast between B and C",""
+"c432fbe7","ensembles_right","11000","Other (please describe)","Because the agencies were reported to be equally reliable, I decided it was important to still consider forecast A in my evaluation. If the highest forecast had a probability greater than 40% that the temperature would be less than 32 degrees, then I was not willing to risk not sending blankets to the region. I took a ""better safe than sorry approach there."" I then also considered the other forecasts and considered how big of a gap there was between them and the outlying forecast."
+"b5828831","ensembles_right","1000","B","My strategy was to send blankets if the probability was greater than 30%. I would have rather lose $1000 than $5000. For the clustered chart, I focus on the majority forecast and disregard the outlier."
+"6e0d951e","ensembles_right","10000","C","If it was below 20% chance to be below 32 F, I did not send them blankets. Otherwise, I sent them blankets"
+"2ac6e8ca","ensembles_left","2000","Some forecast between B and C","I was mostly keeping an eye on the temperature range in the graph, they easily indicate if blankets are necessary. "
+"51f6583d","ensembles_right","12000","Some forecast between B and C","If it was a 50% chance, I would rather send blankets than to not send blankets since if I was wrong, it would cost me more money in the long run than to eat a smaller fee. "
+"5bb16365","ensembles_right","8000","B","15% or less, no I am not sending blankets. Looked at the majority estimates and based my decision on that. "
+"e41ee53e","ensembles_right","10000","Other (please describe)","I'd rather keep the alpacas alive than receive a bonus, but I have a responsibility to stay within budget. I considered 10% or less chance of below 32 degrees to be an acceptable risk."
+"19196019","ensembles_left","7000","A","I used A as reference because it was the safest route.  A would include B and C.  I sent blankets anytime the probability was over around 40%.  I made the decision that was the threshold for me to take my chances.  "
+"80a2272a","ensembles_right","1000","Some forecast between B and C","I did not consider line A whatsoever during this task, because it seemed like an outlier, which made me assume that it was less accurate (though it is possible that it may have been even more accurate then the others, but we all love a good old fashioned hive mind.)I didn't necessarily look at one line in specific, but I mostly looked at where the lines tended to clump. If the lines were clumped in the 50% chance or higher region for under 32 degree temperatures, I selected to send blankets.  If the lines were clumped in the 35-ish percent chance (or lower) region for under 32 degree temperatures, I would not send any blankets. The only times I feel that I got most tripped up was when the lines would be group at around the 40-45% chance of under 32 degree temperatures. I assumed it was better to be safe then sorry in the first part of the survey when I was able to see my budget, but in the second part of my survey, when I wasn't able to see my budget, I was a lot ""gutsy-er"" with my choices, which I find kind of interesting. This was a really fun task!"
+"89695655","ensembles_left","7000","Some forecast between B and C","I was trying to look at all results and trying to get as close to 50% to send."
+"7636f794","ensembles_left","6000","Some forecast between B and C","experience living in colorado"
+"5e74a813","ensembles_right","3000","Some forecast between B and C","generally if the chance was below 10% I did not send blankets."
+"36ac5245","ensembles_right","-2000","C","i check for whether the map will be at a freezing point"
+"4e4fc354","ensembles_left","4000","A","if there was more than a 10% possibility it was going to be below 32 degrees, i stayed more cautious and decided to give out the blankets. i considered all of the lines but more heavily where a majority of the lines were"
+"2d1ca674","ensembles_left","2000","A","because the temperature falls below 32"
+"2357f654","ensembles_right","7000","B","I worked to average the forecasted % risk of a temperature below 32. Even if one model is an outlier, it has a significant impact on the average. If they're considered of equal reliability, you should weigh outliers more heavily to avoid increased costs"
+"bffa105b","ensembles_left","6000","A","If I were making an estimate based on this graph, I would mainly look at the range from B to A. Using this data, it seems like the probability of it being below freezing would be greater than 15 and less than 30, which overall is not too high of a probability. Therefore, I would probably not send blankets."
+"9fef4939","ensembles_right","7000","Some forecast between B and C","If there was a 25% chance or greater of it being too cold I would send blankets. This number was just a ballpark guess on a good percent of when to send blankets. I also just used the center of B-C for my percent and ignored A past the first task."
+"e7151e00","ensembles_left","10000","Some forecast between B and C","The middle of the blue, if below 20 percent chance I'd say no but if nearing over 20 then would say yes"
+"67a5249e","ensembles_left","-3000","C","I identified the key variables, trends, and data points presented in the graph.I then Weigh the benefits and drawbacks of different actions based on the graph's data.
+
+"
+"baf7032d","ensembles_right","1000","A","I would send the blankets because projection A is as good as the others so if the probability was at least high on one I would send the blankets."
+"da01216f","ensembles_right","-15000","C","The decision of sending blankets or not was base on how much time was spent during the cold weather, especially during 0 and 32 degrees. If majority was way passed that then I wouldn't send blankets because it was a bit warmer. "
+"30a59517","ensembles_left","1000","Other (please describe)","I look over where all the lines intersect with 32, including C, even though it may be an outlier. Most of them combined put the temperature at an estimated 15 to 30% chance of it being below 32, with C pulling in at a 3% chance. Looking at this, I decide not to send blankets. At a 1.5 out of 10 to 3 out of 10 chance of it being under 32, the odds are in the favor that the temperature will remain above 32. I do, however, acknowledge that any percent above 0 is still a possibility.
+
+(Ultimately, if you were not trying to maximize money and the budget, you should just always send blankets to avoid any risk, but budgets are budgets.)"
+"d2eb11be","ensembles_left","4000","Some forecast between B and C","The reason was I think some of the forecast between B and C will give a good estimate/average on the probability of the amount of times it will be under 32 degrees."
+"b6550282","ensembles_left","1000","B","I estimated the mean of the forecasts. I should probably be more conservative, and send blankets out more often. The cost of getting it wrong when the probability was low was not worth the risk."
+"05702976","ensembles_left","11000","Other (please describe)","I would not send blankets as the range of all temperature agencies is between 5% and 30% so the odds are in favor of the temperature being higher than 32 degrees."
+"8d92be21","ensembles_left","6000","Other (please describe)","I see where the percentage falls for the majority of the line.  If most are close to or over 50 percent I send blankets "
+"408e2330","ensembles_right","13000","Some forecast between B and C","I like staying safe in the averages, since there's a lower than 10% chance of weather under 32, i decided not to issue blankets. "
+"e867a927","ensembles_left","3000","C","40 "
+"6f6759d7","ensembles_right","-6000","Other (please describe)","If they are all reliable I had to take into account A as well and the majority of b"
+"6221d978","ensembles_left","6000","B","I was looking at the widest bands and looking down at the numbers below to see when or if it would get above 32 degrees"
+"ec6486f3","ensembles_right","1000","Some forecast between B and C","if two aligned closely to a percentage i thought was enough to even consider blankets then I sent them regardless, better safe than sorry"
+"8a2d879d","ensembles_right","2000","Some forecast between B and C","Where the mean of the lines dissect or are more prevalent, is where I took my point of refernce"

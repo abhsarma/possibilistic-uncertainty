@@ -1,0 +1,513 @@
+"StartDate","EndDate","Status","Progress","Duration..in.seconds.","Finished","RecordedDate","ResponseId","DistributionChannel","UserLanguage","Q_RecaptchaScore","meta_info_Browser","meta_info_Version","meta_info_Operating.System","meta_info_Resolution","do_you_consent","Q16","Q20","X1_Q6","X2_Q6","X3_Q6","X4_Q6","X5_Q6","X6_Q6","X7_Q6","X8_Q6","X9_Q6","X10_Q6","X11_Q6","X12_Q6","X13_Q6","X14_Q6","X15_Q6","X16_Q6","X17_Q6","X18_Q6","X19_Q6","X20_Q6","X1_Q8","X2_Q8","X3_Q8","X4_Q8","X5_Q8","X6_Q8","X7_Q8","X8_Q8","X9_Q8","X10_Q8","X11_Q8","X12_Q8","X13_Q8","X14_Q8","seed","PROLIFIC_PID","STUDY_ID","SESSION_ID","total_trials","budget","TotalTrialsSingle","TotalTrialsMultiple","COMP_CODE","trial_index_map_single","trial_index_map_multiple","vis","phrasing","FL_9_DO"
+"Start Date","End Date","Response Type","Progress","Duration (in seconds)","Finished","Recorded Date","Response ID","Distribution Channel","User Language","Q_RecaptchaScore","Click to write the question text - Browser","Click to write the question text - Version","Click to write the question text - Operating System","Click to write the question text - Resolution","By clicking on ""Yes"" below, you indicate that you have understood the Information Sheet and agree to participate in this study.","What is the probability that the temperature falls below 66°F?
+(Please provide a number between 0 and 100, and do not add a ""%"" to your response)","What is the probability that the temperature falls below 68°F?","1 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","2 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","3 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","4 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","5 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","6 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","7 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","8 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","9 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","10 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","11 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","12 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","13 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","14 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","15 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","16 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","17 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","18 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","19 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","20 - Trial number: /[Field-TotalTrialsSingle]
+
+
+	In the previous trial, the actual temperature was °F; you decided to  blankets, which cost $.
+
+
+	Budget Remaining: 
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","1 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","2 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","3 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","4 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","5 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","6 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","7 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","8 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","9 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","10 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","11 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","12 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","13 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","14 - Trial number: /[Field-TotalTrialsMultiple]
+
+
+
+
+
+
+
+
+Based on the forecast above, would you send blankets to the affected regions?","seed","97b2d133","STUDY_ID","SESSION_ID","total_trials","budget","TotalTrialsSingle","TotalTrialsMultiple","COMP_CODE","trial_index_map_single","trial_index_map_multiple","vis","phrasing","FL_9 - Block Randomizer - Display Order"
+"{""ImportId"":""startDate"",""timeZone"":""America/Denver""}","{""ImportId"":""endDate"",""timeZone"":""America/Denver""}","{""ImportId"":""status""}","{""ImportId"":""progress""}","{""ImportId"":""duration""}","{""ImportId"":""finished""}","{""ImportId"":""recordedDate"",""timeZone"":""America/Denver""}","{""ImportId"":""_recordId""}","{""ImportId"":""distributionChannel""}","{""ImportId"":""userLanguage""}","{""ImportId"":""Q_RecaptchaScore""}","{""ImportId"":""QID2_BROWSER""}","{""ImportId"":""QID2_VERSION""}","{""ImportId"":""QID2_OS""}","{""ImportId"":""QID2_RESOLUTION""}","{""ImportId"":""QID3""}","{""ImportId"":""QID16_TEXT""}","{""ImportId"":""QID20_TEXT""}","{""ImportId"":""1_QID6""}","{""ImportId"":""2_QID6""}","{""ImportId"":""3_QID6""}","{""ImportId"":""4_QID6""}","{""ImportId"":""5_QID6""}","{""ImportId"":""6_QID6""}","{""ImportId"":""7_QID6""}","{""ImportId"":""8_QID6""}","{""ImportId"":""9_QID6""}","{""ImportId"":""10_QID6""}","{""ImportId"":""11_QID6""}","{""ImportId"":""12_QID6""}","{""ImportId"":""13_QID6""}","{""ImportId"":""14_QID6""}","{""ImportId"":""15_QID6""}","{""ImportId"":""16_QID6""}","{""ImportId"":""17_QID6""}","{""ImportId"":""18_QID6""}","{""ImportId"":""19_QID6""}","{""ImportId"":""20_QID6""}","{""ImportId"":""1_QID8""}","{""ImportId"":""2_QID8""}","{""ImportId"":""3_QID8""}","{""ImportId"":""4_QID8""}","{""ImportId"":""5_QID8""}","{""ImportId"":""6_QID8""}","{""ImportId"":""7_QID8""}","{""ImportId"":""8_QID8""}","{""ImportId"":""9_QID8""}","{""ImportId"":""10_QID8""}","{""ImportId"":""11_QID8""}","{""ImportId"":""12_QID8""}","{""ImportId"":""13_QID8""}","{""ImportId"":""14_QID8""}","{""ImportId"":""seed""}","828a7158","{""ImportId"":""STUDY_ID""}","{""ImportId"":""SESSION_ID""}","{""ImportId"":""total_trials""}","{""ImportId"":""budget""}","{""ImportId"":""TotalTrialsSingle""}","{""ImportId"":""TotalTrialsMultiple""}","{""ImportId"":""COMP_CODE""}","{""ImportId"":""trial_index_map_single""}","{""ImportId"":""trial_index_map_multiple""}","{""ImportId"":""vis""}","{""ImportId"":""phrasing""}","{""ImportId"":""FL_9_DO""}"
+"2024-09-12 15:08:39","2024-09-12 15:09:19","IP Address","100","40","True","2024-09-12 15:09:20","R_1lX4eqT0C5Kiwxu","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1512x982","No","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","1168","c77a86d2","66e3484fc1e6f6e4818b08d0","01p3y4sv2ygoi","30","18000","18","12","CK3LYXU8","","","ensembles","reliable","FL_26"
+"2024-09-12 15:06:36","2024-09-12 15:10:46","Survey Preview","100","249","True","2024-09-12 15:10:47","R_6rdDDZzTcmKPFsD","preview","EN","1","Chrome","126.0.0.0","Macintosh","1440x900","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","5558",NA,"","","30","-2000","18","12","CK3LYXU8","[18,15,5,3,12,4,17,10,6,2,1,101,9,16,102,7,8,14,11,13]","[3,11,2,6,1,10,101,8,4,102,5,12,7,9]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:24:02","2024-09-12 15:28:48","IP Address","100","286","True","2024-09-12 15:28:49","R_6eFxCjSzyCJwF53","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1707x960","Yes","30","70","No","No","No","Yes","No","No","No","No","No","No","No","Yes","Yes","Yes","No","No","No","No","No","No","No","No","Yes","No","Yes","No","No","Yes","No","Yes","No","Yes","Yes","Yes","5637","58f5d869","66e3484fc1e6f6e4818b08d0","66e35bed31dd343eecc744be","30","5000","18","12","CK3LYXU8","[4,11,16,3,9,15,101,6,7,13,14,2,1,102,12,17,10,18,5,8]","[8,11,102,10,2,9,101,1,7,3,12,5,4,6]","ensembles","reliable","FL_26"
+"2024-09-12 15:23:21","2024-09-12 15:29:01","IP Address","100","339","True","2024-09-12 15:29:01","R_6oIGp4InCx6CjSx","anonymous","EN","1","Edge","128.0.0.0","Windows NT 10.0","1366x768","Yes","30","70","No","Yes","No","No","No","No","No","Yes","Yes","No","No","Yes","No","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","No","Yes","No","No","Yes","No","No","Yes","No","No","Yes","Yes","7646","44f7e636","66e3484fc1e6f6e4818b08d0","66e35bbddb7a28b800c09f7f","30","5000","18","12","CK3LYXU8","[16,3,13,15,9,11,18,5,8,12,101,2,10,7,102,4,17,14,6,1]","[6,2,8,102,7,12,5,10,101,3,11,9,4,1]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:24:59","2024-09-12 15:33:32","IP Address","100","513","True","2024-09-12 15:33:33","R_51sXaKfapwstnH7","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","No","No","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No","No","No","Yes","Yes","Yes","Yes","No","No","Yes","Yes","Yes","No","Yes","Yes","No","No","Yes","Yes","No","Yes","No","Yes","Yes","890","2059059d","66e3484fc1e6f6e4818b08d0","66e35c225077a84914fd1236","30","3000","18","12","CK3LYXU8","[11,16,101,6,14,2,8,5,1,7,18,17,15,102,9,10,4,13,12,3]","[4,1,9,7,102,10,12,5,6,101,3,11,8,2]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:26:39","2024-09-12 15:34:12","IP Address","100","453","True","2024-09-12 15:34:13","R_7QoAcj8JSisuGxi","anonymous","EN","1","Safari","17.6","Macintosh","1440x900","Yes","30","70","No","No","No","No","No","Yes","Yes","Yes","No","No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","No","Yes","Yes","No","No","Yes","No","No","Yes","Yes","No","Yes","Yes","Yes","No","7227","9668fc30","66e3484fc1e6f6e4818b08d0","66e35c85449dc2baf0d07224","30","0","18","12","CK3LYXU8","[18,15,17,16,101,2,1,3,10,9,14,5,102,8,12,7,11,6,4,13]","[1,2,12,101,5,11,8,102,6,10,7,4,3,9]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:25:37","2024-09-12 15:34:15","IP Address","100","517","True","2024-09-12 15:34:15","R_173Yumvmmqdoy1W","anonymous","EN","1","Opera","112.0.0.0","Windows NT 10.0","1920x1080","Yes","30%","70","Yes","No","No","Yes","No","Yes","No","Yes","Yes","Yes","No","Yes","No","No","No","No","No","No","Yes","Yes","No","Yes","Yes","No","Yes","Yes","No","Yes","No","Yes","Yes","No","No","Yes","2040","fe9c3093","66e3484fc1e6f6e4818b08d0","66e35c484bc40251bdd06211","30","5000","18","12","CK3LYXU8","[1,12,10,2,8,7,15,6,3,102,18,9,11,16,13,101,17,14,4,5]","[11,4,1,10,5,6,101,7,8,102,2,9,12,3]","ensembles","reliable","FL_26"
+"2024-09-12 15:25:21","2024-09-12 15:34:41","IP Address","100","560","True","2024-09-12 15:34:42","R_673mvbzJ8nzwYo1","anonymous","EN","1","Firefox","115.0","Macintosh","1440x900","Yes","30","70","No","Yes","No","No","Yes","Yes","No","Yes","Yes","No","Yes","No","Yes","Yes","Yes","No","Yes","No","Yes","No","Yes","Yes","No","Yes","No","No","Yes","Yes","Yes","No","Yes","No","Yes","No","6253","6713e43a","66e3484fc1e6f6e4818b08d0","66e35c39a61ef29e750c33c9","30","3000","18","12","CK3LYXU8","[12,6,16,11,7,10,101,2,9,13,5,14,3,8,102,17,4,15,1,18]","[7,4,9,6,8,101,2,5,102,11,3,10,1,12]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:27:52","2024-09-12 15:40:53","IP Address","100","780","True","2024-09-12 15:40:54","R_11unHErmBF3YLTR","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","50","70","No","Yes","No","No","Yes","Yes","Yes","No","Yes","No","No","No","No","Yes","Yes","No","Yes","No","No","No","No","Yes","Yes","Yes","Yes","Yes","No","No","Yes","No","Yes","Yes","No","Yes","3179","954e3943","66e3484fc1e6f6e4818b08d0","66e35cc19e921b7d324d1a5b","30","1000","18","12","CK3LYXU8","[9,3,15,17,6,5,7,13,102,18,10,8,101,1,2,14,4,12,16,11]","[9,6,102,3,5,4,12,101,1,10,2,8,11,7]","ensembles","reliable","FL_26"
+"2024-09-12 15:39:51","2024-09-12 15:44:37","IP Address","100","286","True","2024-09-12 15:44:38","R_5KmaHtKQD2TUMMz","anonymous","EN","1","Firefox","129.0","Macintosh","1440x900","Yes","30","70","No","Yes","No","No","No","Yes","Yes","No","No","No","Yes","No","No","Yes","Yes","No","No","Yes","No","No","No","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","No","No","No","Yes","No","4810","41ef3f46","66e3484fc1e6f6e4818b08d0","66e35f97fbea570bcd437ced","30","2000","18","12","C1OSMFWY","[17,5,13,101,8,2,3,10,9,15,4,16,14,1,102,18,11,6,7,12]","[12,5,101,10,2,3,102,6,1,9,7,11,4,8]","ensembles","reliable","FL_26"
+"2024-09-12 15:34:06","2024-09-12 15:47:08","IP Address","100","782","True","2024-09-12 15:47:09","R_3iX4e0JGgH6dVZ6","anonymous","EN","1","Firefox","130.0","Windows NT 10.0","1707x1067","Yes","30","40","Yes","No","Yes","Yes","Yes","No","Yes","No","Yes","No","Yes","No","No","Yes","Yes","No","No","No","No","Yes","No","No","Yes","No","No","No","No","No","Yes","No","No","Yes","No","No","3549","49ab4ff8","66e3484fc1e6f6e4818b08d0","66e35e41cc0164a5a6340ab1","30","-10000","18","12","CK3LYXU8","[16,3,12,7,5,13,102,15,14,10,2,9,8,101,18,4,11,6,1,17]","[8,3,102,5,9,6,10,11,101,2,7,4,1,12]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:28:31","2024-09-12 15:47:26","IP Address","100","1135","True","2024-09-12 15:47:26","R_3do2jVklAStGjrO","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30%","70%","No","No","Yes","No","No","No","No","Yes","Yes","Yes","No","No","Yes","Yes","Yes","No","No","No","No","Yes","No","No","No","Yes","No","Yes","Yes","Yes","Yes","No","No","No","No","Yes","205","99ec06b5","66e3484fc1e6f6e4818b08d0","66e35c9ba368fd488baf1923","30","11000","18","12","CK3LYXU8","[15,18,102,14,12,8,101,2,5,4,9,13,6,7,3,17,11,16,10,1]","[8,12,101,5,9,3,4,102,2,6,11,10,7,1]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:39:11","2024-09-12 15:47:32","IP Address","100","500","True","2024-09-12 15:47:33","R_3LMPaW6TRsgSv0j","anonymous","EN","1","Edge","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","No","Yes","Yes","Yes","No","No","No","No","No","Yes","Yes","No","No","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","No","No","Yes","No","Yes","Yes","No","Yes","No","No","Yes","Yes","3608","18c49769","66e3484fc1e6f6e4818b08d0","66e35f785c8e43a2e29cefd3","30","9000","18","12","C1OSMFWY","[12,9,102,8,11,14,10,18,15,3,5,13,101,6,7,4,16,17,1,2]","[7,5,9,8,6,101,3,4,12,102,10,11,1,2]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:39:23","2024-09-12 15:47:41","IP Address","100","498","True","2024-09-12 15:47:41","R_6ffBEdoDwh9MP1n","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1600x900","Yes","30","70","No","No","No","Yes","Yes","No","No","No","No","Yes","No","No","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","No","Yes","No","No","No","No","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","5311","2f757282","66e3484fc1e6f6e4818b08d0","66e35f80c1e6f6e4818b0d34","30","4000","18","12","C1OSMFWY","[1,13,12,7,102,15,17,14,16,5,101,11,6,3,4,18,2,8,10,9]","[9,4,12,101,8,11,2,3,10,102,1,5,7,6]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:40:06","2024-09-12 15:48:07","IP Address","100","481","True","2024-09-12 15:48:07","R_3b3EnktfqaDkj6h","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","No","Yes","No","No","No","No","No","No","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","No","No","Yes","Yes","Yes","Yes","No","No","No","Yes","Yes","Yes","No","Yes","9509","73f667fc","66e3484fc1e6f6e4818b08d0","66e35fa61e500dfed05e747e","30","-2000","18","12","C1OSMFWY","[6,10,4,101,8,16,17,18,15,11,14,13,102,9,1,2,5,3,12,7]","[9,10,4,6,102,7,12,11,101,1,3,2,8,5]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:39:58","2024-09-12 15:52:36","IP Address","100","757","True","2024-09-12 15:52:36","R_7ocoTlyBdLuXC5e","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","Yes","No","Yes","No","No","No","No","No","No","No","Yes","No","Yes","No","Yes","No","No","Yes","No","No","No","Yes","No","Yes","No","No","No","Yes","No","No","No","Yes","No","5254","9b54f5cf","66e3484fc1e6f6e4818b08d0","66e35fa8123b369af3722a48","30","7000","18","12","C1OSMFWY","[4,5,7,3,15,16,9,8,14,13,101,6,10,102,18,2,12,11,1,17]","[6,8,4,9,102,3,5,11,2,10,101,7,1,12]","ensembles","reliable","FL_26"
+"2024-09-12 15:32:47","2024-09-12 15:54:07","IP Address","100","1279","True","2024-09-12 15:54:08","R_37eRVI5qPTtVrkR","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","No","No","Yes","No","No","Yes","Yes","Yes","No","Yes","Yes","No","No","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","No","No","No","No","Yes","Yes","Yes","No","No","Yes","1373","601f5af0","66e3484fc1e6f6e4818b08d0","66e35ca986c5a532a82a1b74","30","7000","18","12","CK3LYXU8","[18,14,8,13,17,7,102,9,15,5,4,12,101,1,16,6,3,10,11,2]","[3,5,102,8,9,11,101,12,10,4,2,6,7,1]","ensembles","reliable","FL_26"
+"2024-09-12 15:52:52","2024-09-12 15:57:25","IP Address","100","273","True","2024-09-12 15:57:26","R_56lpTD5rJMOLptQ","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","No","No","No","No","No","No","No","No","Yes","Yes","Yes","No","No","Yes","Yes","Yes","No","No","Yes","Yes","No","Yes","No","No","Yes","No","Yes","No","No","Yes","No","Yes","Yes","Yes","1455","81e4dd89","66e3484fc1e6f6e4818b08d0","66e362aad8803bf1db7fa61b","30","6000","18","12","C1OSMFWY","[12,17,18,15,8,101,11,16,6,102,3,10,14,7,5,4,13,9,1,2]","[7,5,11,10,102,12,4,9,101,3,8,6,1,2]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:22","2024-09-12 15:58:03","IP Address","100","280","True","2024-09-12 15:58:03","R_6rIcOrnnSFh8ksJ","anonymous","EN","1","Chrome","127.0.0.0","Macintosh","1440x900","Yes","30","70","No","Yes","No","No","Yes","No","Yes","No","No","No","No","No","No","Yes","Yes","Yes","Yes","No","No","Yes","No","No","No","No","Yes","Yes","Yes","No","Yes","Yes","Yes","No","No","Yes","2956","e3760e78","66e3484fc1e6f6e4818b08d0","66e362cb6d3cb519889e7e3e","30","-4000","18","12","C1OSMFWY","[16,4,8,12,6,9,7,14,101,17,11,10,13,1,102,2,3,15,18,5]","[3,6,9,11,5,102,7,8,1,2,101,10,12,4]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:17","2024-09-12 15:58:12","IP Address","100","235","True","2024-09-12 15:58:12","R_7CpGlXDm6dtsxpE","anonymous","EN","1","Edge","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","No","No","Yes","Yes","No","No","No","No","Yes","No","No","Yes","No","Yes","No","No","Yes","No","No","No","Yes","Yes","No","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","7097","3fcec4a5","66e3484fc1e6f6e4818b08d0","66e36303ed2810a1274c8c0b","30","-2000","18","12","C1OSMFWY","[12,16,102,2,11,8,13,10,4,101,6,5,18,3,7,14,1,17,9,15]","[3,5,7,12,101,9,2,102,4,8,1,11,6,10]","ensembles","reliable","FL_26"
+"2024-09-12 15:52:43","2024-09-12 15:58:30","IP Address","100","347","True","2024-09-12 15:58:31","R_1HUncW79AeAnpni","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","No","No","No","Yes","Yes","Yes","No","No","Yes","No","No","Yes","No","No","Yes","Yes","Yes","No","No","No","No","Yes","No","Yes","No","Yes","No","Yes","No","Yes","Yes","No","No","9261","42215322","66e3484fc1e6f6e4818b08d0","66e362a4d12fb46d83d7f2e8","30","5000","18","12","C1OSMFWY","[6,13,11,12,102,7,4,5,10,9,16,17,8,101,18,2,3,1,14,15]","[7,6,3,101,5,8,4,11,102,12,2,1,9,10]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:53:31","2024-09-12 15:58:33","IP Address","100","302","True","2024-09-12 15:58:34","R_71mLDtqKDeWz4Nk","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1440x900","Yes","30","70","No","Yes","No","Yes","No","No","No","No","No","Yes","No","Yes","Yes","No","No","No","No","No","Yes","No","No","No","Yes","No","Yes","No","No","Yes","Yes","Yes","No","No","Yes","No","7013","1f3c51ae","66e3484fc1e6f6e4818b08d0","66e362d3a368fd488baf1a42","30","-2000","18","12","C1OSMFWY","[9,4,10,2,16,101,11,18,17,1,8,102,3,7,6,13,15,14,5,12]","[6,5,1,11,2,12,101,4,7,102,10,9,3,8]","ensembles","reliable","FL_26"
+"2024-09-12 15:52:40","2024-09-12 15:59:14","IP Address","100","394","True","2024-09-12 15:59:14","R_534dnqiQoxONLpn","anonymous","EN","1","Opera","112.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","No","No","No","No","Yes","No","No","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","No","No","Yes","Yes","No","Yes","Yes","Yes","Yes","No","Yes","Yes","No","Yes","No","No","5095","c1fe9129","66e3484fc1e6f6e4818b08d0","66e362990f8bb584bd5b8893","30","4000","18","12","C1OSMFWY","[15,18,101,12,10,9,14,11,4,3,8,1,102,13,6,2,7,5,16,17]","[8,4,9,6,1,7,102,11,2,5,101,3,10,12]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:33","2024-09-12 15:59:18","IP Address","100","344","True","2024-09-12 15:59:18","R_7Jy38TV8ERbVeKf","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","Yes","Yes","Yes","No","Yes","No","No","Yes","No","Yes","Yes","No","No","Yes","No","No","No","No","Yes","No","Yes","No","Yes","No","No","Yes","Yes","No","Yes","Yes","Yes","No","Yes","2301","9fd8e625","66e3484fc1e6f6e4818b08d0","66e362d0808ac76c6449529c","30","-11000","18","12","C1OSMFWY","[2,9,17,102,14,16,8,7,1,101,4,13,15,10,5,11,12,3,18,6]","[9,1,11,102,10,8,5,3,101,6,7,2,12,4]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:53:47","2024-09-12 15:59:22","IP Address","100","334","True","2024-09-12 15:59:22","R_3Nq3lg7fILSfk8l","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","2048x1152","Yes","30","70","No","No","No","No","No","Yes","Yes","Yes","Yes","No","No","No","Yes","No","Yes","No","Yes","Yes","No","Yes","No","No","Yes","Yes","No","Yes","Yes","Yes","Yes","No","Yes","Yes","No","Yes","8921","d436d45f","66e3484fc1e6f6e4818b08d0","66e362e3331d0d141bd06525","30","10000","18","12","C1OSMFWY","[14,9,11,10,16,102,3,5,1,15,17,101,8,12,2,18,4,6,13,7]","[11,12,2,7,101,8,6,1,102,10,3,4,9,5]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:23","2024-09-12 15:59:28","IP Address","100","245","True","2024-09-12 15:59:29","R_5LtEsetHbBUegl0","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1440x900","Yes","30","70","No","No","No","No","No","Yes","No","Yes","Yes","Yes","No","No","No","Yes","Yes","No","No","Yes","No","No","No","No","No","No","No","No","Yes","No","Yes","Yes","No","Yes","No","No","5603","d62966fd","66e3484fc1e6f6e4818b08d0","66e3634490404ffe020c48c8","30","2000","18","12","C1OSMFWY","[14,11,10,8,9,1,15,6,4,7,101,13,18,102,2,3,17,5,16,12]","[5,4,101,12,9,7,102,6,1,2,11,3,10,8]","ensembles","reliable","FL_26"
+"2024-09-12 15:55:29","2024-09-12 15:59:48","IP Address","100","258","True","2024-09-12 15:59:48","R_5wQR0QMpt8j1Xwf","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1280x720","Yes","30","69","No","Yes","Yes","No","No","No","No","Yes","No","No","Yes","No","No","Yes","No","No","Yes","No","Yes","Yes","No","No","No","Yes","No","Yes","Yes","No","No","No","Yes","Yes","Yes","Yes","7963","be9d59cb","66e3484fc1e6f6e4818b08d0","66e363497b696b793b1c61be","30","-4000","18","12","C1OSMFWY","[14,7,6,10,16,13,15,1,8,101,3,9,12,102,17,18,5,11,4,2]","[10,5,9,102,12,4,6,8,101,11,3,7,2,1]","ensembles","reliable","FL_26"
+"2024-09-12 15:52:46","2024-09-12 16:00:00","IP Address","100","433","True","2024-09-12 16:00:00","R_3LhrSA4rGh3FuFy","anonymous","EN","1","Firefox","125.0","Windows NT 10.0","1536x864","Yes","30","70","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","6594","4ec8e9cd","66e3484fc1e6f6e4818b08d0","66e362a47adb3e23e127ee92","30","0","18","12","C1OSMFWY","[2,10,8,11,6,12,18,15,101,7,16,102,9,5,3,14,1,13,4,17]","[7,5,6,9,4,101,12,2,10,102,1,8,3,11]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:38","2024-09-12 16:00:02","IP Address","100","324","True","2024-09-12 16:00:02","R_7SxavaCMErR168L","anonymous","EN","1","Firefox","130.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","Yes","No","No","No","No","Yes","Yes","Yes","Yes","No","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","No","No","No","Yes","Yes","Yes","6907","bc9b489b","66e3484fc1e6f6e4818b08d0","66e363172f0276635a5d32b4","30","1000","18","12","C1OSMFWY","[1,3,10,101,18,15,9,11,102,4,17,12,5,14,8,16,7,2,13,6]","[2,7,101,5,6,102,3,8,11,10,12,1,9,4]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:31","2024-09-12 16:00:04","IP Address","100","392","True","2024-09-12 16:00:05","R_5TfhemZ9jrPgl6V","anonymous","EN","1","Chrome","125.0.0.0","Windows NT 10.0","1600x1067","Yes","30","70","No","No","No","Yes","Yes","No","Yes","No","No","No","No","No","Yes","Yes","No","Yes","No","Yes","No","Yes","Yes","No","Yes","Yes","No","No","No","Yes","No","Yes","No","Yes","Yes","No","1056","71b1288f","66e3484fc1e6f6e4818b08d0","66e362d1b8dfcfa0ae494bc0","30","6000","18","12","C1OSMFWY","[12,17,9,6,102,11,5,10,101,7,18,16,4,2,14,8,15,3,13,1]","[3,11,7,6,10,12,101,4,5,102,9,2,8,1]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:33","2024-09-12 16:00:18","IP Address","100","344","True","2024-09-12 16:00:18","R_60CY4lzucmDCinT","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1440x900","Yes","20","34","Yes","No","Yes","No","Yes","No","No","No","No","No","No","Yes","No","No","No","Yes","No","Yes","No","Yes","No","No","Yes","Yes","No","Yes","Yes","No","Yes","No","Yes","No","Yes","No","9269","0d828527","66e3484fc1e6f6e4818b08d0","66e3630eed2810a1274c8c10","30","-8000","18","12","C1OSMFWY","[14,3,13,8,101,5,17,102,11,7,4,15,6,2,12,9,10,18,16,1]","[7,8,102,2,4,3,11,101,9,5,6,12,10,1]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:53:23","2024-09-12 16:00:25","IP Address","100","421","True","2024-09-12 16:00:25","R_5kIl69qvcsxm6pt","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","No","Yes","Yes","Yes","Yes","Yes","No","Yes","No","No","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","No","No","Yes","Yes","6979","1f3d1e54","66e3484fc1e6f6e4818b08d0","66e362c5764aba5ff6de13ee","30","1000","18","12","C1OSMFWY","[8,15,2,5,6,1,3,101,4,13,12,16,17,102,7,9,10,18,14,11]","[2,1,3,102,10,11,8,4,5,6,101,12,9,7]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:10","2024-09-12 16:00:32","IP Address","100","321","True","2024-09-12 16:00:32","R_3l0eL3xtURKFN5v","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","2560x1440","Yes","30","70","No","Yes","No","No","Yes","No","Yes","No","No","Yes","No","Yes","No","No","Yes","Yes","Yes","No","No","Yes","No","Yes","No","Yes","No","Yes","Yes","No","Yes","Yes","Yes","No","No","Yes","153","63e53a50","66e3484fc1e6f6e4818b08d0","66e363377794ea31ff3f3673","30","10000","18","12","C1OSMFWY","[13,7,18,101,2,9,6,11,17,5,10,102,12,16,4,8,3,15,14,1]","[12,3,8,4,101,6,7,10,102,5,2,11,9,1]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:53:57","2024-09-12 16:00:40","IP Address","100","403","True","2024-09-12 16:00:41","R_7f1mCbwCdMjEPZa","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","Yes","No","Yes","No","Yes","No","No","No","Yes","No","No","Yes","No","No","Yes","No","No","No","No","No","Yes","No","Yes","No","Yes","Yes","No","No","Yes","No","No","No","No","6405","b44c092c","66e3484fc1e6f6e4818b08d0","66e362ed87cff1b76484e2b1","30","13000","18","12","C1OSMFWY","[8,4,6,3,13,102,17,15,12,5,10,101,1,7,16,2,11,9,18,14]","[11,3,8,102,12,1,4,5,101,2,7,6,9,10]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:15","2024-09-12 16:00:57","IP Address","100","402","True","2024-09-12 16:00:58","R_3ERPxW0d9gJi9yN","anonymous","EN","1","Firefox","130.0","Windows NT 10.0","1920x1080","Yes","30","70","No","Yes","Yes","Yes","No","Yes","Yes","No","No","Yes","Yes","No","No","No","Yes","No","No","Yes","Yes","No","No","Yes","No","Yes","Yes","Yes","No","No","No","Yes","Yes","Yes","Yes","Yes","8063","d3cc31cc","66e3484fc1e6f6e4818b08d0","66e362fcb85608573a617a3a","30","4000","18","12","C1OSMFWY","[12,4,3,5,18,102,1,15,16,9,8,14,17,101,7,13,10,6,2,11]","[9,2,101,5,8,3,11,10,12,102,6,4,1,7]","ensembles","reliable","FL_26"
+"2024-09-12 15:55:16","2024-09-12 16:00:58","IP Address","100","341","True","2024-09-12 16:00:59","R_5ELpRI1qgJUa0t5","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","2560x1440","Yes","30","70","Yes","No","Yes","No","Yes","Yes","Yes","No","No","Yes","Yes","No","No","No","No","No","Yes","No","No","No","Yes","No","No","Yes","Yes","Yes","Yes","Yes","No","No","Yes","No","No","Yes","5325","513fcbc0","66e3484fc1e6f6e4818b08d0","66e3633da9321b64a78a36ed","30","11000","18","12","C1OSMFWY","[3,11,4,16,2,6,7,12,18,1,102,8,10,13,101,14,5,17,15,9]","[2,12,9,102,1,4,5,7,101,8,3,11,10,6]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:11","2024-09-12 16:01:05","IP Address","100","473","True","2024-09-12 16:01:05","R_5arV9RCWy5fUHYl","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","Yes","No","No","No","No","Yes","No","Yes","Yes","Yes","No","Yes","No","No","Yes","Yes","No","Yes","Yes","Yes","Yes","No","Yes","No","No","Yes","No","Yes","Yes","No","Yes","Yes","Yes","Yes","7479","95510fe6","66e3484fc1e6f6e4818b08d0","66e362bb3250bfa0338fa3ce","30","8000","18","12","C1OSMFWY","[8,13,16,15,101,3,11,4,10,9,12,7,17,14,102,1,18,6,5,2]","[7,10,5,101,12,6,11,102,8,9,1,4,3,2]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:53:30","2024-09-12 16:01:09","IP Address","100","458","True","2024-09-12 16:01:10","R_5W5Dh0pwXkJsXPr","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","Yes","Yes","Yes","No","No","No","Yes","Yes","No","No","Yes","Yes","Yes","No","No","No","Yes","Yes","Yes","Yes","Yes","No","No","Yes","No","Yes","Yes","Yes","No","No","Yes","Yes","Yes","7128","1484ef14","66e3484fc1e6f6e4818b08d0","66e362c8358770e417516433","30","8000","18","12","C1OSMFWY","[12,6,7,2,16,13,11,102,4,15,14,8,9,1,101,18,17,10,3,5]","[6,8,10,9,102,12,5,1,3,101,11,7,2,4]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:53:14","2024-09-12 16:01:34","IP Address","100","500","True","2024-09-12 16:01:34","R_5MmRTy5XAPbnJiV","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1440x900","Yes","30","70","Yes","No","No","Yes","Yes","Yes","Yes","No","No","No","No","No","Yes","No","No","No","No","No","No","No","Yes","No","Yes","Yes","Yes","No","No","No","No","Yes","Yes","Yes","No","No","8745","b24c60e9","66e3484fc1e6f6e4818b08d0","66e362bac4f69830a4c7a0d4","30","-7000","18","12","C1OSMFWY","[2,6,18,102,4,3,1,14,101,11,5,7,8,16,15,17,9,10,12,13]","[1,10,2,3,4,11,101,12,7,102,5,6,8,9]","ensembles","reliable","FL_26"
+"2024-09-12 15:55:32","2024-09-12 16:01:38","IP Address","100","366","True","2024-09-12 16:01:38","R_7y0ZSetbweKWiWb","anonymous","EN","0.8999999761581421","Chrome","126.0.0.0","Macintosh","1440x900","Yes","30","70","No","No","Yes","No","No","Yes","No","No","Yes","Yes","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","No","Yes","No","Yes","No","Yes","No","Yes","No","No","Yes","Yes","No","8720","7a1a89e8","66e3484fc1e6f6e4818b08d0","66e3634b7c23979e8c56058d","30","8000","18","12","C1OSMFWY","[15,18,4,12,17,102,11,14,7,1,101,5,9,3,13,2,16,8,6,10]","[3,9,102,8,6,11,2,12,1,10,101,5,4,7]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:19","2024-09-12 16:01:39","IP Address","100","439","True","2024-09-12 16:01:39","R_3bW9VLjmpsx0iXw","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","Yes","No","No","No","No","No","No","No","No","Yes","No","Yes","No","Yes","No","No","Yes","Yes","Yes","No","No","Yes","Yes","No","Yes","No","No","No","No","Yes","Yes","Yes","Yes","3858","378a2cb5","66e3484fc1e6f6e4818b08d0","66e362f57112cddc2f538f38","30","6000","18","12","C1OSMFWY","[7,3,14,8,15,13,9,101,10,16,102,12,4,18,2,17,11,5,6,1]","[10,8,102,5,6,2,9,101,12,11,7,3,4,1]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:56","2024-09-12 16:01:42","IP Address","100","346","True","2024-09-12 16:01:43","R_7SBTgqepDEo39Ja","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","No","No","Yes","No","Yes","No","No","Yes","Yes","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","No","No","Yes","Yes","Yes","No","Yes","Yes","Yes","No","8550","58396b01","66e3484fc1e6f6e4818b08d0","66e363642ca5bd05a2e1c0a8","30","7000","18","12","C1OSMFWY","[18,12,13,7,11,102,14,16,3,8,6,2,4,9,101,10,1,17,5,15]","[8,7,12,11,101,9,2,102,5,6,1,4,3,10]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:00","2024-09-12 16:01:44","IP Address","100","344","True","2024-09-12 16:01:44","R_1CPtsmlOeGhaL00","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1280x800","Yes","30","70","Yes","No","Yes","Yes","No","No","No","No","No","No","No","Yes","No","No","No","No","Yes","Yes","No","No","No","No","Yes","Yes","No","No","No","No","No","No","No","Yes","No","No","5749","2d5b4111","66e3484fc1e6f6e4818b08d0","66e3634914a956e1d5a8911e","30","3000","18","12","C1OSMFWY","[3,10,2,4,7,15,12,101,13,6,14,102,16,8,5,11,9,1,18,17]","[8,7,102,2,5,10,4,3,9,6,101,1,11,12]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:14","2024-09-12 16:01:53","IP Address","100","519","True","2024-09-12 16:01:54","R_3NOmTWDh6yCdNuB","anonymous","EN","0.6000000238418579","Chrome","128.0.0.0","Macintosh","2231x1061","Yes","30","90","No","Yes","No","Yes","No","Yes","No","Yes","Yes","No","Yes","Yes","No","No","Yes","No","No","No","No","Yes","No","Yes","No","No","Yes","Yes","No","Yes","No","Yes","Yes","No","No","Yes","6110","494831d0","66e3484fc1e6f6e4818b08d0","66e362b94b803923fe0c477f","30","10000","18","12","C1OSMFWY","[9,8,17,3,101,5,18,4,7,13,102,1,15,14,6,11,10,16,12,2]","[7,3,101,12,1,5,11,4,9,102,6,10,8,2]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:10","2024-09-12 16:02:06","IP Address","100","475","True","2024-09-12 16:02:06","R_66URWgqMFDnkIjn","anonymous","EN","1","Chrome","128.0.0.0","CrOS x86_64 14541.0.0","1536x864","Yes","30","70","Yes","Yes","No","No","No","Yes","Yes","Yes","No","No","No","Yes","Yes","No","No","No","Yes","Yes","No","No","Yes","Yes","Yes","No","No","No","No","No","No","No","Yes","Yes","No","No","2326","3d981e0f","66e3484fc1e6f6e4818b08d0","66e362e2e37fd2d12aabc1b8","30","0","18","12","C1OSMFWY","[2,6,14,9,15,1,102,10,8,16,11,5,4,12,13,101,3,7,18,17]","[1,4,102,10,6,3,9,101,7,8,2,5,11,12]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:45","2024-09-12 16:02:10","IP Address","100","385","True","2024-09-12 16:02:11","R_1XgnY7ikw1s7VY9","anonymous","EN","1","Firefox","115.0","Windows NT 10.0","2560x1440","Yes","30","70","No","No","No","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","No","Yes","Yes","No","Yes","No","Yes","Yes","No","Yes","No","Yes","No","No","Yes","Yes","Yes","No","Yes","No","5604","20ffce74","66e3484fc1e6f6e4818b08d0","66e363555396b2d40323c0ef","30","8000","18","12","C1OSMFWY","[11,12,101,15,16,9,10,102,1,6,7,4,8,14,13,2,3,18,5,17]","[6,5,10,102,9,4,8,101,7,1,2,12,3,11]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:25","2024-09-12 16:02:12","IP Address","100","466","True","2024-09-12 16:02:13","R_132MHFjHydqfvs0","anonymous","EN","1","Safari","17.6","Macintosh","1440x900","Yes","30","70","Yes","Yes","No","No","Yes","No","No","Yes","No","No","Yes","No","No","No","Yes","Yes","No","No","No","No","No","No","No","No","No","Yes","No","Yes","No","Yes","No","Yes","Yes","No","8727","c5883f1b","66e3484fc1e6f6e4818b08d0","66e362eabc4d2359deb25b50","30","2000","18","12","C1OSMFWY","[6,5,10,101,7,16,17,3,15,18,102,11,9,13,2,4,12,1,8,14]","[3,6,101,9,11,4,7,102,12,2,8,1,5,10]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:27","2024-09-12 16:02:27","IP Address","100","359","True","2024-09-12 16:02:27","R_6ELsTEYbwrmG2FG","anonymous","EN","1","Chrome","124.0.0.0","Macintosh","1440x900","Yes","30","78","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","7616","9f98e913","66e3484fc1e6f6e4818b08d0","66e363825396b2d40323c0f9","30","3000","18","12","C1OSMFWY","[8,17,12,18,5,101,2,14,13,6,10,16,102,1,15,7,9,3,4,11]","[9,11,12,101,8,10,1,5,102,4,6,2,3,7]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:05","2024-09-12 16:02:36","IP Address","100","391","True","2024-09-12 16:02:37","R_1OVFB6oKUduFrDf","anonymous","EN","1","Firefox","130.0","Windows NT 10.0","1920x1080","Yes","30","70","No","No","Yes","No","No","No","No","Yes","No","Yes","Yes","No","Yes","No","Yes","No","Yes","No","Yes","No","Yes","No","Yes","Yes","Yes","No","Yes","No","No","Yes","Yes","Yes","Yes","No","2160","d9a5d622","66e3484fc1e6f6e4818b08d0","66e3636c13e48ff5ff3e4598","30","1000","18","12","C1OSMFWY","[10,6,3,9,15,101,11,7,16,102,4,14,1,12,8,17,2,13,5,18]","[5,10,102,7,2,9,6,101,11,3,1,8,4,12]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:54:48","2024-09-12 16:02:57","IP Address","100","489","True","2024-09-12 16:02:57","R_3DBkPuvQmgMfhl7","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","No","No","Yes","Yes","Yes","No","Yes","No","No","Yes","No","Yes","Yes","Yes","No","No","No","No","No","Yes","No","No","No","No","Yes","Yes","Yes","No","Yes","No","No","No","No","9523","739a6aec","66e3484fc1e6f6e4818b08d0","66e3631f0a4bbdab1d84d916","30","6000","18","12","C1OSMFWY","[15,8,101,4,6,1,14,2,18,12,102,9,3,7,5,17,10,11,16,13]","[1,5,8,12,101,2,4,3,10,102,6,7,11,9]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:37","2024-09-12 16:03:03","IP Address","100","566","True","2024-09-12 16:03:04","R_5nvE175TUgKvdgl","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1280x720","Yes","30","70","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","No","No","No","Yes","Yes","No","No","Yes","Yes","No","No","Yes","Yes","Yes","No","Yes","Yes","No","Yes","No","Yes","Yes","No","No","No","Yes","4239","5daa466f","66e3484fc1e6f6e4818b08d0","66e362d5423687d6a4cd68d3","30","-8000","18","12","C1OSMFWY","[3,17,10,6,102,11,15,2,18,16,7,12,5,101,8,14,4,13,1,9]","[11,2,102,7,5,12,10,4,101,8,3,9,1,6]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:47","2024-09-12 16:03:07","IP Address","100","379","True","2024-09-12 16:03:07","R_5uQlBkLNjVl5uj7","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1728x1117","Yes","30","70","Yes","Yes","No","No","No","Yes","No","No","No","Yes","No","Yes","No","Yes","Yes","No","Yes","No","No","No","No","Yes","Yes","No","No","Yes","Yes","Yes","No","Yes","No","No","No","No","7546","21e1befd","66e3484fc1e6f6e4818b08d0","66e363944b803923fe0c47b8","30","6000","18","12","C1OSMFWY","[3,5,15,16,12,7,101,18,14,2,9,1,10,102,4,17,6,13,11,8]","[8,3,102,12,10,1,5,2,11,4,101,9,7,6]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:22","2024-09-12 16:03:37","IP Address","100","494","True","2024-09-12 16:03:37","R_5QPoQhzPRiGYgjd","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","No","No","Yes","Yes","Yes","Yes","No","No","No","No","No","No","No","No","No","Yes","No","Yes","Yes","Yes","Yes","No","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","2335","a354cff0","66e3484fc1e6f6e4818b08d0","66e36337b4cd35d3ac5bb490","30","-9000","18","12","C1OSMFWY","[15,16,102,6,4,1,10,3,9,7,13,5,101,12,18,8,2,11,17,14]","[1,9,12,4,101,3,6,102,8,5,2,7,11,10]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:23","2024-09-12 16:03:42","IP Address","100","438","True","2024-09-12 16:03:43","R_54kfbC0eujO36Ct","anonymous","EN","1","Firefox","130.0","Linux x86_64","1920x1080","Yes","30","70","Yes","No","No","Yes","No","Yes","No","No","No","Yes","No","Yes","No","Yes","Yes","No","No","No","No","Yes","No","Yes","Yes","No","Yes","Yes","No","Yes","No","No","Yes","No","No","Yes","4127","71d4bd6b","66e3484fc1e6f6e4818b08d0","66e363816bcb0b05718b15de","30","5000","18","12","C1OSMFWY","[4,10,101,1,13,8,9,15,12,5,17,6,102,7,2,16,11,18,14,3]","[11,5,6,8,3,4,101,1,10,102,7,12,9,2]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:54:48","2024-09-12 16:03:48","IP Address","100","540","True","2024-09-12 16:03:50","R_11Zu7APWO70jnfW","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","No","No","No","No","Yes","Yes","No","No","Yes","No","No","Yes","Yes","No","No","No","No","Yes","Yes","No","Yes","Yes","No","No","No","Yes","No","Yes","Yes","No","No","Yes","Yes","564","647cf9ff","66e3484fc1e6f6e4818b08d0","66e363137c23979e8c560581","30","11000","18","12","C1OSMFWY","[1,16,13,11,9,3,5,15,101,4,17,14,6,102,10,18,8,12,2,7]","[9,7,2,11,101,10,3,6,4,102,12,8,1,5]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:40","2024-09-12 16:03:53","IP Address","100","613","True","2024-09-12 16:03:54","R_5rJGMBgWJt2WjuP","anonymous","EN","1","Firefox","130.0","Macintosh","1470x956","Yes","30","70","No","No","No","No","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","No","No","Yes","No","No","Yes","Yes","No","Yes","No","No","Yes","Yes","Yes","Yes","Yes","No","No","No","Yes","Yes","No","1500","ba2413eb","66e3484fc1e6f6e4818b08d0","66e362da9d38732fb3c7a0c6","30","9000","18","12","C1OSMFWY","[13,11,10,16,9,8,5,102,4,3,14,6,12,17,2,101,15,7,1,18]","[2,10,101,4,7,102,3,6,8,11,9,5,1,12]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:10","2024-09-12 16:03:55","IP Address","100","525","True","2024-09-12 16:03:56","R_3in8wERJOXZhMZ3","anonymous","EN","1","Edge","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","No","No","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","5947","cfe1c516","66e3484fc1e6f6e4818b08d0","66e36336a368fd488baf1a59","30","-8000","18","12","C1OSMFWY","[8,4,1,9,10,12,3,11,13,17,2,101,14,15,102,6,5,7,18,16]","[8,5,2,101,6,1,7,102,9,12,3,4,10,11]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:53:47","2024-09-12 16:04:00","IP Address","100","613","True","2024-09-12 16:04:01","R_3X6dg3I3akmVTLj","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","No","No","No","Yes","No","Yes","Yes","No","No","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","No","No","Yes","Yes","No","8689","7b5091aa","66e3484fc1e6f6e4818b08d0","66e362e3d0f25d18b82a1b2e","30","-4000","18","12","C1OSMFWY","[17,13,6,10,7,102,18,2,1,3,4,9,101,14,11,12,16,8,5,15]","[9,3,102,1,2,11,8,6,7,101,12,5,4,10]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:36","2024-09-12 16:04:13","IP Address","100","636","True","2024-09-12 16:04:13","R_6igsuHujEnTkpEe","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","No","No","No","No","Yes","No","Yes","No","Yes","No","Yes","No","No","Yes","No","No","Yes","No","No","No","No","No","Yes","Yes","Yes","No","No","No","Yes","No","No","No","No","No","1557","4bbd365a","66e3484fc1e6f6e4818b08d0","66e362c143342499daccdea0","30","-2000","18","12","C1OSMFWY","[7,18,16,15,102,13,2,14,4,17,6,10,8,1,101,9,3,11,12,5]","[9,10,6,102,3,11,12,101,1,5,2,7,8,4]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:30","2024-09-12 16:04:14","IP Address","100","523","True","2024-09-12 16:04:14","R_3rUikrnTl7wi5BT","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","20","20","No","No","Yes","No","No","Yes","Yes","No","Yes","No","No","No","No","No","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","No","No","Yes","Yes","Yes","No","No","Yes","Yes","Yes","Yes","No","6616","213b4ec2","66e3484fc1e6f6e4818b08d0","66e36342c29412e184ab0c09","30","-24000","18","12","C1OSMFWY","[15,7,101,4,13,12,11,3,17,10,5,14,1,9,102,2,8,18,6,16]","[7,3,12,101,2,6,102,8,9,1,5,10,4,11]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:54:01","2024-09-12 16:04:28","IP Address","100","626","True","2024-09-12 16:04:28","R_3NQkiplNnQw7sVn","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1440x900","Yes","30","70","No","Yes","No","No","No","Yes","Yes","Yes","No","No","No","Yes","Yes","No","No","No","No","Yes","No","Yes","No","No","No","Yes","No","Yes","No","No","No","No","No","Yes","No","Yes","7783","b902a55b","66e3484fc1e6f6e4818b08d0","66e362e3ee05b97c9557c2df","30","11000","18","12","C1OSMFWY","[15,4,18,101,17,7,1,5,16,11,8,102,3,14,12,10,9,2,13,6]","[11,3,10,102,12,2,5,7,9,101,6,1,8,4]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:34","2024-09-12 16:04:45","IP Address","100","671","True","2024-09-12 16:04:46","R_3tAblrig1W72Qmd","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1280x720","Yes","30","70","No","No","No","Yes","Yes","Yes","Yes","Yes","No","Yes","No","Yes","Yes","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","No","No","No","Yes","No","Yes","Yes","No","Yes","No","7538","3491d31c","66e3484fc1e6f6e4818b08d0","66e362ced8803bf1db7fa63a","30","7000","18","12","C1OSMFWY","[18,13,12,4,2,11,102,3,17,6,101,5,10,15,9,8,1,16,7,14]","[6,3,4,2,7,101,9,8,11,102,1,12,5,10]","ensembles","reliable","FL_26"
+"2024-09-12 15:55:23","2024-09-12 16:04:45","IP Address","100","562","True","2024-09-12 16:04:46","R_1sdHtJg4yudsXth","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1366x768","Yes","30","70","Yes","No","No","No","Yes","No","No","No","No","No","Yes","Yes","Yes","Yes","No","No","No","No","No","No","No","No","No","No","Yes","Yes","No","No","No","Yes","No","No","Yes","No","6921","bd02159c","66e3484fc1e6f6e4818b08d0","66e3633dbf0da8100e738879","30","8000","18","12","C1OSMFWY","[1,10,6,12,5,15,9,13,101,11,4,2,102,3,17,18,8,16,7,14]","[3,7,9,6,1,2,101,11,8,102,5,12,4,10]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:40","2024-09-12 16:04:47","IP Address","100","547","True","2024-09-12 16:04:48","R_3LT3BA6avOZFZ7C","anonymous","EN","1","Chrome","116.0.0.0","Macintosh","1440x900","Yes","30","70","Yes","Yes","No","No","No","No","Yes","No","Yes","Yes","No","No","Yes","Yes","No","No","No","Yes","No","No","No","Yes","No","Yes","Yes","No","Yes","No","Yes","No","Yes","No","No","No","2572","04022d15","66e3484fc1e6f6e4818b08d0","66e36351ab61f63260d4f415","30","11000","18","12","C1OSMFWY","[1,3,12,8,10,11,102,14,7,5,101,9,6,2,13,17,15,4,16,18]","[6,5,8,102,4,11,1,7,2,9,101,3,10,12]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:07","2024-09-12 16:04:49","IP Address","100","581","True","2024-09-12 16:04:49","R_3SIkwa6TGTNBf5n","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","68","Yes","No","No","Yes","No","Yes","Yes","Yes","No","No","Yes","No","No","No","No","No","Yes","Yes","Yes","Yes","No","Yes","Yes","No","No","No","No","No","Yes","Yes","No","Yes","Yes","Yes","3138","40780c0a","66e3484fc1e6f6e4818b08d0","66e363331cd165ce2ac3ff91","30","9000","18","12","C1OSMFWY","[5,13,15,102,17,9,8,1,101,12,2,14,16,18,10,11,6,7,3,4]","[7,5,1,101,12,9,11,8,102,6,10,4,2,3]","ensembles","reliable","FL_26"
+"2024-09-12 15:53:11","2024-09-12 16:05:03","IP Address","100","712","True","2024-09-12 16:05:04","R_3P22rIL8v3qaAon","anonymous","EN","1","Chrome","127.0.0.0","Macintosh","1512x982","Yes","30","70","Yes","Yes","No","Yes","Yes","Yes","No","Yes","Yes","No","Yes","Yes","No","Yes","Yes","No","No","No","Yes","No","Yes","Yes","Yes","No","No","No","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","1791","9c19c942","66e3484fc1e6f6e4818b08d0","66e362bb044b8abf2f88b91d","30","2000","18","12","C1OSMFWY","[10,8,101,17,18,6,3,5,102,13,11,2,16,1,4,14,12,15,7,9]","[10,3,4,101,11,12,1,2,8,102,7,9,5,6]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:26","2024-09-12 16:05:09","IP Address","100","583","True","2024-09-12 16:05:10","R_5FQCsixmESUg0qM","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1440x900","Yes","30","70","Yes","No","Yes","No","No","No","No","No","No","No","No","No","No","No","Yes","No","No","No","Yes","Yes","No","No","Yes","No","No","No","No","No","No","No","No","No","Yes","Yes","8361","1f60801d","66e3484fc1e6f6e4818b08d0","66e363428ada9c0900a89227","30","-6000","18","12","C1OSMFWY","[1,17,2,16,10,11,15,7,8,101,18,5,14,13,102,9,4,12,3,6]","[1,6,102,12,9,11,8,10,5,3,101,7,2,4]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:06","2024-09-12 16:05:12","IP Address","100","546","True","2024-09-12 16:05:12","R_6IAxjPUusXR2tkZ","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1440x900","Yes","30","70","No","Yes","Yes","No","Yes","No","Yes","No","No","Yes","No","Yes","No","No","No","Yes","No","Yes","Yes","No","Yes","No","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","1511","d639984a","66e3484fc1e6f6e4818b08d0","66e3636c2f0276635a5d32be","30","5000","18","12","C1OSMFWY","[14,1,102,5,2,18,6,8,11,4,15,3,12,101,16,7,17,9,10,13]","[3,11,2,8,101,1,12,102,5,4,10,6,7,9]","ensembles","reliable","FL_26"
+"2024-09-12 15:55:55","2024-09-12 16:05:26","IP Address","100","571","True","2024-09-12 16:05:27","R_6EfwFHBN6oI0pXz","anonymous","EN","1","Chrome","103.0.0.0","CrOS x86_64 14816.131.0","1366x768","Yes","65","64","Yes","Yes","No","No","Yes","No","Yes","No","No","Yes","Yes","Yes","No","Yes","Yes","Yes","No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","No","Yes","Yes","No","No","Yes","No","Yes","2881","bda08696","66e3484fc1e6f6e4818b08d0","66e36360767542339c8b0bf2","30","-2000","18","12","C1OSMFWY","[12,4,16,3,9,18,15,1,6,101,2,13,17,102,11,5,7,10,14,8]","[7,9,101,2,1,12,8,102,11,3,4,6,10,5]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:59:40","2024-09-12 16:06:15","IP Address","100","394","True","2024-09-12 16:06:15","R_1GvQnt7CnIvI64l","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1792x1120","Yes","60","50","No","Yes","Yes","No","No","No","No","No","No","No","No","No","Yes","Yes","Yes","No","No","Yes","No","No","No","Yes","No","No","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","No","No","5459","06dfb378","66e3484fc1e6f6e4818b08d0","66e36393b4cd35d3ac5bb4c0","30","-12000","18","12","C1OSMFWY","[5,15,9,8,1,101,11,4,3,17,7,12,6,13,102,18,10,2,14,16]","[10,4,101,8,5,12,102,3,7,1,6,2,9,11]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:42","2024-09-12 16:06:24","IP Address","100","581","True","2024-09-12 16:06:24","R_7VqGvioDMlyDtZk","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1703x939","Yes","30","70","No","No","No","No","No","Yes","No","Yes","Yes","Yes","No","No","No","Yes","No","No","No","Yes","No","Yes","No","No","No","No","Yes","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","4964","7d86c3c6","66e3484fc1e6f6e4818b08d0","66e363883558bba552cd714d","30","12000","18","12","C1OSMFWY","[15,16,13,14,9,6,7,2,102,1,12,11,101,3,17,18,10,5,8,4]","[9,8,101,7,1,11,2,4,102,10,6,12,5,3]","ensembles","reliable","FL_26"
+"2024-09-12 15:55:00","2024-09-12 16:07:00","IP Address","100","719","True","2024-09-12 16:07:00","R_5xRAkdXghLZRU3m","anonymous","EN","1","Chrome","128.0.0.0","CrOS x86_64 14541.0.0","1536x864","Yes","0","70","Yes","No","No","No","Yes","No","Yes","No","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","No","No","No","Yes","No","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","No","No","1660","9c7c88d7","66e3484fc1e6f6e4818b08d0","66e3631d9e1d06dc5b728551","30","9000","18","12","C1OSMFWY","[3,18,9,101,10,17,8,13,1,5,12,7,14,102,2,4,6,11,15,16]","[3,12,102,5,6,9,101,8,1,2,4,7,10,11]","ensembles","reliable","FL_26"
+"2024-09-12 15:55:19","2024-09-12 16:07:16","IP Address","100","717","True","2024-09-12 16:07:17","R_6cqDoC38u4J3Fhn","anonymous","EN","1","Chrome","128.0.0.0","CrOS x86_64 14541.0.0","1366x768","Yes","35","70","No","No","No","Yes","Yes","Yes","Yes","Yes","No","Yes","No","Yes","No","No","No","No","Yes","No","No","No","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","No","2533","61cc99c2","66e3484fc1e6f6e4818b08d0","66e363342e1e7b18546546f6","30","6000","18","12","C1OSMFWY","[11,15,13,7,102,4,10,2,14,5,18,6,101,8,9,1,3,12,16,17]","[6,12,9,7,101,3,4,102,5,1,2,8,10,11]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:35","2024-09-12 16:07:26","IP Address","100","770","True","2024-09-12 16:07:26","R_73R6fWtr20CA69b","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","2048x1080","Yes","30","65","No","Yes","Yes","Yes","Yes","No","No","No","No","No","Yes","Yes","Yes","Yes","No","No","No","No","No","No","Yes","No","Yes","Yes","Yes","No","Yes","No","No","Yes","No","No","No","No","6212","ae64d295","66e3484fc1e6f6e4818b08d0","66e362f90cba652ac5abc0a5","30","11000","18","12","C1OSMFWY","[17,2,5,1,4,8,10,101,16,13,6,3,7,102,14,11,9,15,18,12]","[5,7,1,3,102,2,4,11,10,6,101,9,12,8]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:08","2024-09-12 16:07:28","IP Address","100","680","True","2024-09-12 16:07:29","R_1UsGczHqiAgoQiB","anonymous","EN","1","Edge","128.0.0.0","Windows NT 10.0","1920x1080","Yes","20","70","No","Yes","No","Yes","Yes","No","No","No","No","No","No","Yes","Yes","No","Yes","No","No","No","Yes","Yes","No","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No","No","No","Yes","Yes","988","5254366e","66e3484fc1e6f6e4818b08d0","66e363713aaf98d002a56db7","30","6000","18","12","C1OSMFWY","[11,1,13,7,102,15,18,8,9,12,101,3,4,10,2,14,16,17,6,5]","[9,12,7,101,6,2,102,5,1,8,10,11,4,3]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:54:35","2024-09-12 16:08:13","IP Address","100","818","True","2024-09-12 16:08:13","R_1QfowaahSpyM96n","anonymous","EN","1","Chrome","128.0.0.0","Android 10","384x857","Yes","10","25","No","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","No","Yes","No","Yes","No","No","No","No","No","No","Yes","Yes","Yes","Yes","Yes","Yes","No","No","No","No","No","No","No","No","2683","372260d8","66e3484fc1e6f6e4818b08d0","66e36309123b369af3722ac8","30","1000","18","12","C1OSMFWY","[14,13,7,3,2,15,4,101,6,1,10,5,11,102,9,8,12,16,18,17]","[7,2,102,1,4,3,6,101,9,5,8,10,12,11]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:47","2024-09-12 16:08:29","IP Address","100","702","True","2024-09-12 16:08:30","R_73zeI5SoNGoGULv","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1095x730","Yes","30","70","Yes","No","Yes","Yes","No","Yes","No","Yes","No","No","Yes","No","No","No","No","Yes","No","Yes","No","Yes","No","Yes","Yes","No","No","No","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","5454","daef40da","66e3484fc1e6f6e4818b08d0","66e3637ee4d21ec98c4bfab4","30","10000","18","12","C1OSMFWY","[6,9,5,1,17,3,18,8,11,16,102,14,15,12,101,2,10,7,13,4]","[10,2,7,12,11,101,5,9,102,1,6,4,8,3]","ensembles","reliable","FL_26"
+"2024-09-12 15:55:43","2024-09-12 16:08:29","IP Address","100","766","True","2024-09-12 16:08:30","R_1YFDuwVtoACG1uV","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1440x900","Yes","30","70","Yes","Yes","No","Yes","No","Yes","No","No","No","Yes","No","Yes","No","No","No","Yes","No","No","Yes","Yes","Yes","Yes","No","No","No","No","No","No","Yes","Yes","No","No","No","Yes","2325","1cf7347b","66e3484fc1e6f6e4818b08d0","66e363522f91ae67eae47445","30","-11000","18","12","C1OSMFWY","[10,18,2,13,1,9,102,8,15,4,5,14,101,11,12,3,7,17,16,6]","[1,3,9,5,8,101,6,7,102,2,12,10,11,4]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:56:36","2024-09-12 16:09:23","IP Address","100","766","True","2024-09-12 16:09:23","R_5q1vylyx101i9lo","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","Yes","No","Yes","No","Yes","Yes","No","Yes","Yes","No","No","No","No","No","No","Yes","Yes","Yes","No","No","No","Yes","No","Yes","Yes","No","Yes","Yes","No","Yes","Yes","Yes","No","6744","a6e439a2","66e3484fc1e6f6e4818b08d0","66e363833250bfa0338fa3e4","30","4000","18","12","C1OSMFWY","[2,13,16,14,17,102,6,11,1,3,101,9,18,8,10,15,7,4,5,12]","[10,11,1,101,5,7,12,6,102,9,4,2,3,8]","ensembles","reliable","FL_26"
+"2024-09-12 15:58:12","2024-09-12 16:10:09","IP Address","100","717","True","2024-09-12 16:10:10","R_5oZU4W8M3nEm18V","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1366x768","Yes","0","70","No","No","No","Yes","No","No","Yes","No","No","No","Yes","Yes","Yes","Yes","No","No","No","No","No","Yes","No","No","No","Yes","Yes","Yes","Yes","No","No","No","No","No","Yes","Yes","7084","b9837a4a","66e3484fc1e6f6e4818b08d0","66e362cc6bcb0b05718b15af","30","2000","18","12","C1OSMFWY","[11,17,14,3,101,18,1,9,8,7,102,6,4,2,15,12,16,13,10,5]","[11,5,12,102,3,2,1,9,101,7,10,8,6,4]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:59:13","2024-09-12 16:11:51","IP Address","100","757","True","2024-09-12 16:11:52","R_62JL7s19xfUTO0q","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1366x768","Yes","30","70","No","No","Yes","No","Yes","Yes","No","No","No","Yes","No","Yes","Yes","Yes","No","Yes","No","Yes","Yes","No","No","No","No","No","No","No","No","Yes","No","No","No","No","Yes","Yes","3354","4a2560b4","66e3484fc1e6f6e4818b08d0","66e36418b7c3533a966f0971","30","4000","18","12","C1OSMFWY","[16,12,5,11,2,4,18,13,10,9,101,6,3,102,17,8,15,1,7,14]","[10,6,8,101,7,3,2,102,4,11,12,1,5,9]","ensembles","reliable","FL_26"
+"2024-09-12 15:57:26","2024-09-12 16:12:04","IP Address","100","877","True","2024-09-12 16:12:05","R_1GfwGgESmKWC0ra","anonymous","EN","1","Chrome","109.0.0.0","Windows NT 10.0","1366x768","Yes","30","70","No","No","No","No","No","No","Yes","No","Yes","No","Yes","Yes","Yes","Yes","No","No","No","No","No","Yes","Yes","Yes","Yes","Yes","No","No","No","Yes","No","No","No","Yes","Yes","Yes","7177","b6f93533","66e3484fc1e6f6e4818b08d0","66e363b333d1bca31539921f","30","2000","18","12","C1OSMFWY","[16,15,6,10,101,14,5,17,3,13,4,102,9,2,18,12,7,8,11,1]","[4,3,6,2,101,9,8,102,12,11,10,5,7,1]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:54:27","2024-09-12 16:12:14","IP Address","100","1067","True","2024-09-12 16:12:15","R_3k6fQtL9cEx1uhX","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","No","Yes","No","No","Yes","No","No","No","Yes","No","Yes","No","No","No","Yes","No","No","No","No","No","Yes","No","Yes","Yes","No","Yes","No","No","No","No","No","No","No","7014","07131410","66e3484fc1e6f6e4818b08d0","66e362fd92f668cbfb9e4525","30","-6000","18","12","C1OSMFWY","[10,9,18,4,2,17,101,12,11,102,6,1,15,3,8,7,13,16,14,5]","[5,3,6,1,102,7,2,9,101,12,8,11,10,4]","ensembles","equally_reliable","FL_11"
+"2024-09-12 16:03:40","2024-09-12 16:12:53","IP Address","100","553","True","2024-09-12 16:12:54","R_6DqBYhBsOdsx9Vx","anonymous","EN","1","Edge","128.0.0.0","Windows NT 10.0","1366x768","Yes","30","70","Yes","Yes","No","No","Yes","Yes","No","No","No","No","No","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","No","No","No","No","No","Yes","No","No","No","No","Yes","No","Yes","Yes","No","2892","f6a26c69","66e3484fc1e6f6e4818b08d0","66e36535bf0da8100e7388d8","30","4000","18","12","C1OSMFWY","[4,3,10,12,102,5,9,14,7,18,13,6,101,17,11,15,8,2,1,16]","[4,10,7,8,3,12,101,6,9,102,5,2,1,11]","ensembles","reliable","FL_26"
+"2024-09-12 15:56:59","2024-09-12 16:13:05","IP Address","100","966","True","2024-09-12 16:13:06","R_3Gk8bZKwXdtPkea","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","Yes","No","No","Yes","Yes","No","Yes","No","No","Yes","No","No","Yes","No","Yes","Yes","No","No","Yes","Yes","No","Yes","No","Yes","Yes","No","Yes","Yes","Yes","Yes","No","Yes","Yes","7006","c375121d","66e3484fc1e6f6e4818b08d0","66e363873aaf98d002a56dbb","30","10000","18","12","C1OSMFWY","[16,4,17,12,6,10,11,102,9,8,3,18,101,1,14,5,2,15,13,7]","[6,12,7,10,4,1,101,8,3,102,2,11,9,5]","ensembles","reliable","FL_26"
+"2024-09-12 15:58:11","2024-09-12 16:13:19","IP Address","100","907","True","2024-09-12 16:13:20","R_1alCwyJre98fSwh","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","33","70","No","No","No","No","Yes","Yes","Yes","No","No","Yes","No","No","Yes","No","Yes","Yes","Yes","Yes","Yes","No","No","No","No","No","Yes","Yes","No","No","Yes","Yes","Yes","Yes","Yes","No","6854","2a740177","66e3484fc1e6f6e4818b08d0","66e363e8462b22f339e4460d","30","4000","18","12","C1OSMFWY","[13,17,12,8,5,1,102,10,15,4,14,101,11,18,9,2,6,7,3,16]","[6,3,102,12,8,7,101,9,5,1,10,4,2,11]","ensembles","reliable","FL_26"
+"2024-09-12 16:01:46","2024-09-12 16:15:54","IP Address","100","848","True","2024-09-12 16:15:55","R_3117Tih8jRGrsKl","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","2048x1152","Yes","30","70","No","No","Yes","No","No","No","No","Yes","Yes","Yes","No","No","No","Yes","No","No","No","No","Yes","No","No","No","No","Yes","Yes","No","No","No","Yes","No","No","No","Yes","Yes","5504","90142baf","66e3484fc1e6f6e4818b08d0","66e3638578aeb4af41c96a38","30","2000","18","12","C1OSMFWY","[9,12,8,13,101,16,11,5,7,3,17,10,14,2,102,1,18,15,4,6]","[11,9,6,102,2,5,7,8,1,101,12,10,3,4]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:55:57","2024-09-12 16:16:06","IP Address","100","1208","True","2024-09-12 16:16:06","R_68IgjfksHDvb28q","anonymous","EN","1","Chrome","127.0.0.0","CrOS x86_64 14541.0.0","1410x940","Yes","30","70","No","No","No","Yes","Yes","No","No","No","Yes","No","Yes","Yes","Yes","No","No","No","Yes","Yes","Yes","Yes","No","Yes","No","No","No","Yes","Yes","Yes","No","No","No","Yes","No","No","839","883ea924","66e3484fc1e6f6e4818b08d0","66e362e6e5be50fc1ada952c","30","4000","18","12","C1OSMFWY","[11,15,16,5,3,9,8,12,102,10,1,4,2,101,17,14,7,6,18,13]","[5,3,12,101,6,2,1,102,7,11,10,4,8,9]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:26","2024-09-12 16:19:39","IP Address","100","1512","True","2024-09-12 16:19:39","R_1EE6bkCAT4W9R8S","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1512x851","Yes","50","80","Yes","Yes","No","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","No","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","7601","463fedd7","66e3484fc1e6f6e4818b08d0","66e3630a123b369af3722acb","30","2000","18","12","C1OSMFWY","[3,1,101,8,13,18,102,17,11,12,2,6,9,7,4,16,14,5,10,15]","[5,2,1,101,11,6,4,102,8,12,9,3,7,10]","ensembles","reliable","FL_26"
+"2024-09-12 15:54:57","2024-09-12 16:23:42","IP Address","100","1724","True","2024-09-12 16:23:42","R_3nVM1O0KI9w3OZI","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","No","No","Yes","No","Yes","No","Yes","No","Yes","No","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","5956","df5f8f03","66e3484fc1e6f6e4818b08d0","66e3632b11b63e18cc4e194c","30","6000","18","12","C1OSMFWY","[15,10,5,101,8,14,11,17,12,16,2,3,1,18,102,7,13,6,4,9]","[3,9,11,7,101,12,1,5,102,10,8,4,2,6]","ensembles","equally_reliable","FL_11"
+"2024-09-12 15:53:19","2024-09-12 16:29:12","IP Address","100","2152","True","2024-09-12 16:29:12","R_6l69VmXhLhRPWwh","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","10","10%","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","No","Yes","3879","ed1a79e4","66e3484fc1e6f6e4818b08d0","66e362b70db29e8625a15951","30","2000","18","12","C1OSMFWY","[7,16,1,18,11,17,3,14,15,101,10,6,102,2,5,12,9,13,4,8]","[2,10,5,102,4,8,1,101,11,7,12,9,3,6]","ensembles","equally_reliable","FL_11"
+"2024-09-12 16:32:36","2024-09-12 16:36:52","IP Address","100","255","True","2024-09-12 16:36:53","R_1DmNUUokv57pavv","anonymous","EN","1","Chrome","127.0.0.0","Linux x86_64","384x857","Yes","30","70","Yes","Yes","No","No","No","No","Yes","No","Yes","No","No","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","3525","75210414","66e3484fc1e6f6e4818b08d0","66e36bf60ec61aeee8b67181","30","2000","18","12","C1OSMFWY","[5,6,15,4,101,9,1,14,7,13,17,16,102,3,11,12,8,18,2,10]","[3,8,101,4,11,9,2,102,10,12,5,6,1,7]","ensembles","reliable","FL_26"
+"2024-09-12 16:29:29","2024-09-12 16:38:47","IP Address","100","558","True","2024-09-12 16:38:48","R_5jjnlJK1yWK2hhZ","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","Yes","No","No","Yes","Yes","No","No","Yes","Yes","Yes","Yes","No","No","No","Yes","Yes","No","No","Yes","No","Yes","No","No","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","No","Yes","Yes","1290","9d9863e2","66e3484fc1e6f6e4818b08d0","66e36b3421f2753be8d0e859","30","9000","18","12","C1OSMFWY","[3,18,14,6,1,101,16,2,102,7,8,9,11,17,5,4,15,13,10,12]","[1,10,11,102,4,6,5,101,3,2,9,12,7,8]","ensembles","equally_reliable","FL_11"
+"2024-09-12 16:32:31","2024-09-12 16:40:08","IP Address","100","457","True","2024-09-12 16:40:09","R_5zR4SkBtlV6tv45","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1366x768","Yes","30","70","Yes","Yes","No","No","No","Yes","No","Yes","Yes","Yes","No","No","No","Yes","No","No","Yes","No","Yes","Yes","Yes","No","Yes","Yes","No","No","No","Yes","No","No","No","Yes","Yes","Yes","8141","7506e247","66e3484fc1e6f6e4818b08d0","66e36bfceb471e8ccb752084","30","-6000","18","12","C1OSMFWY","[18,4,101,14,15,8,10,3,1,2,13,11,16,102,12,17,6,7,9,5]","[2,11,1,3,101,8,9,102,7,10,12,5,6,4]","ensembles","reliable","FL_26"
+"2024-09-12 16:34:09","2024-09-12 16:41:59","IP Address","100","470","True","2024-09-12 16:42:00","R_1etBClde1NIuabY","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1366x768","Yes","40","50","Yes","Yes","Yes","Yes","Yes","No","No","No","Yes","No","Yes","No","Yes","Yes","Yes","No","Yes","Yes","Yes","No","Yes","Yes","Yes","No","Yes","No","Yes","No","Yes","No","No","Yes","Yes","No","7159","b8c02390","66e3484fc1e6f6e4818b08d0","66e36c55bc4d2359deb25d48","30","1000","18","12","C1OSMFWY","[1,10,102,18,13,17,16,12,2,15,7,101,6,11,9,8,4,5,3,14]","[4,1,102,11,7,12,6,8,5,101,10,3,2,9]","ensembles","equally_reliable","FL_11"
+"2024-09-12 16:34:57","2024-09-12 16:43:15","IP Address","100","498","True","2024-09-12 16:43:15","R_5LjlXGj8UouXNjs","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1280x720","Yes","30","70","Yes","No","No","No","Yes","Yes","Yes","No","No","No","Yes","No","Yes","No","Yes","No","No","No","No","No","Yes","No","Yes","Yes","No","No","No","Yes","No","Yes","Yes","No","No","No","9020","78ab5b74","66e3484fc1e6f6e4818b08d0","66e36c889864275efec82cae","30","2000","18","12","C1OSMFWY","[4,8,10,11,1,6,102,14,18,13,5,17,2,15,3,101,7,9,12,16]","[5,7,102,3,12,10,101,1,9,2,4,6,8,11]","ensembles","equally_reliable","FL_11"
+"2024-09-12 16:31:15","2024-09-12 16:43:38","IP Address","100","743","True","2024-09-12 16:43:39","R_6fW4NhvsRmlE6QF","anonymous","EN","1","Edge","128.0.0.0","Windows NT 10.0","1536x864","Yes","30","70","No","Yes","No","No","No","No","Yes","Yes","No","Yes","Yes","No","Yes","Yes","No","Yes","No","No","Yes","Yes","Yes","No","Yes","No","Yes","No","Yes","No","Yes","Yes","Yes","Yes","No","Yes","1980","212ac028","66e3484fc1e6f6e4818b08d0","66e36ba590c261c9edc8bfca","30","9000","18","12","C1OSMFWY","[12,3,9,18,16,101,8,4,13,6,5,14,102,10,15,7,17,11,2,1]","[6,11,8,10,3,101,5,9,4,102,2,7,12,1]","ensembles","reliable","FL_26"
+"2024-09-12 16:34:53","2024-09-12 16:43:52","IP Address","100","538","True","2024-09-12 16:43:52","R_7tpPV49k5v17lRL","anonymous","EN","1","Firefox","130.0","Macintosh","1680x1050","Yes","30","70","Yes","No","No","No","Yes","No","No","Yes","Yes","No","No","No","No","No","Yes","Yes","Yes","Yes","No","No","No","No","Yes","Yes","Yes","Yes","No","Yes","No","Yes","Yes","Yes","Yes","No","4332","26827dd2","66e3484fc1e6f6e4818b08d0","66e36c8792f79c08693f3096","30","1000","18","12","C1OSMFWY","[5,13,10,18,102,17,16,4,6,12,15,7,9,101,2,1,8,3,11,14]","[11,10,6,102,3,4,12,8,101,1,5,2,7,9]","ensembles","reliable","FL_26"
+"2024-09-12 16:34:18","2024-09-12 16:44:31","IP Address","100","613","True","2024-09-12 16:44:31","R_7zJhTZ4230UmK3S","anonymous","EN","1","Chrome","128.0.0.0","Macintosh","1440x900","Yes","30","70","Yes","No","Yes","No","Yes","No","No","No","No","No","Yes","No","Yes","No","No","No","No","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","No","No","No","No","Yes","No","No","Yes","Yes","8426","3588d44e","66e3484fc1e6f6e4818b08d0","66e36c5b7c5c5b761419ff1f","30","1000","18","12","C1OSMFWY","[5,18,102,7,1,15,11,8,101,17,6,9,4,16,13,12,14,3,2,10]","[3,1,5,101,4,6,10,8,12,102,9,11,2,7]","ensembles","equally_reliable","FL_11"
+"2024-09-12 16:33:22","2024-09-12 16:47:04","IP Address","100","822","True","2024-09-12 16:47:05","R_3KshBCM7S8rqKaH","anonymous","EN","1","Firefox","130.0","Windows NT 10.0","1366x768","Yes","30","70","No","Yes","Yes","Yes","Yes","Yes","Yes","No","Yes","Yes","Yes","No","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","Yes","304","1af37d85","66e3484fc1e6f6e4818b08d0","66e36bfda3effe3386be28ce","30","-8000","18","12","C1OSMFWY","[4,16,12,5,18,6,101,3,15,9,13,102,8,11,14,1,10,7,17,2]","[2,5,3,7,102,10,9,8,101,12,6,4,11,1]","ensembles","reliable","FL_26"
+"2024-09-12 16:32:31","2024-09-12 16:48:16","IP Address","100","944","True","2024-09-12 16:48:16","R_1Iu8PHFimpJEfMh","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","Yes","No","Yes","No","No","Yes","No","No","No","No","Yes","No","No","Yes","Yes","No","No","No","No","No","Yes","No","No","No","Yes","No","Yes","Yes","No","Yes","No","No","No","2767","c4bbb3d6","66e3484fc1e6f6e4818b08d0","66e36bf5646b245b0578bd1a","30","1000","18","12","C1OSMFWY","[1,3,11,6,13,102,18,15,9,7,14,2,16,101,5,4,10,12,8,17]","[11,4,101,7,10,1,9,3,2,102,6,8,5,12]","ensembles","reliable","FL_26"
+"2024-09-12 16:37:59","2024-09-12 16:54:24","IP Address","100","984","True","2024-09-12 16:54:25","R_30yv99fA0nOvOet","anonymous","EN","1","Chrome","128.0.0.0","Windows NT 10.0","1920x1080","Yes","30","70","No","Yes","No","No","Yes","Yes","No","Yes","No","No","No","No","Yes","Yes","Yes","No","Yes","No","Yes","No","Yes","Yes","No","Yes","Yes","Yes","No","No","No","No","Yes","No","Yes","No","2295","737fad1f","66e3484fc1e6f6e4818b08d0","66e36cb26a31f4cda597f506","30","5000","18","12","C1OSMFWY","[9,1,11,10,8,5,13,102,17,14,18,12,4,3,7,101,2,15,6,16]","[8,5,101,3,1,102,6,7,9,12,2,10,4,11]","ensembles","reliable","FL_26"
+"2024-09-12 16:32:35","2024-09-12 17:02:08","IP Address","100","1773","True","2024-09-12 17:02:09","R_33xsNexei4xv0mB","anonymous","EN","","Firefox","130.0","Windows NT 10.0","1920x1080","Yes","30","70","Yes","No","No","Yes","No","No","No","No","No","Yes","Yes","No","Yes","No","Yes","Yes","No","No","Yes","Yes","Yes","No","No","No","No","No","Yes","Yes","No","Yes","Yes","No","No","No","3289","c5fc67e5","66e3484fc1e6f6e4818b08d0","66e36bf76a74092763709e89","30","0","18","12","C1OSMFWY","[2,16,8,6,9,11,14,101,15,3,5,12,4,13,102,1,18,10,7,17]","[3,9,8,12,101,6,2,102,10,1,4,7,5,11]","ensembles","reliable","FL_26"
